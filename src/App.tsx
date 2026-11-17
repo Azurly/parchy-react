@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
 import {
 	ArrowDownRight,
 	ArrowRight,
@@ -34,6 +34,11 @@ import {
 	WandSparkles,
 	X,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Toaster, toast } from '@/components/ui/toast'
 import './App.css'
 
 type NavItem = { label: string; icon: typeof LayoutDashboard; count?: string }
@@ -176,6 +181,16 @@ function App() {
 	const [showGoalMenu, setShowGoalMenu] = useState(false)
 	const [showAllAlerts, setShowAllAlerts] = useState(false)
 	const [showQuickStart, setShowQuickStart] = useState(false)
+	const [searchValue, setSearchValue] = useState('')
+	const [isLoading, setIsLoading] = useState(true)
+
+	useEffect(() => {
+		const timer = window.setTimeout(() => {
+			setIsLoading(false)
+		}, 900)
+
+		return () => window.clearTimeout(timer)
+	}, [])
 
 	const progress = Math.round((3030 / goal) * 100)
 	const alerts = showAllAlerts
@@ -188,6 +203,91 @@ function App() {
 				{ tone: 'amber', title: 'Un personnage à deux endroits', detail: 'Élise · Chapitres 2 et 4', icon: Users },
 				{ tone: 'rose', title: 'Une date à vérifier', detail: 'La tempête · Chronologie', icon: Clock3 },
 			]
+
+	const handleSave = () => {
+		toast.add({
+			title: 'Brouillon enregistré',
+			description: 'Votre dernière version est bien sauvegardée.',
+			type: 'success',
+		})
+	}
+
+	if (isLoading) {
+		return (
+			<div className="app-shell" aria-busy="true" aria-live="polite">
+				<aside className="sidebar">
+					<div className="brand" aria-hidden="true">
+						<Skeleton className="h-8 w-8 rounded-xl" />
+						<Skeleton className="ml-2 h-6 w-24 rounded-md" />
+					</div>
+
+					<Skeleton className="mt-8 h-16 w-full rounded-xl border border-border/60" />
+
+					<div className="side-nav" aria-hidden="true">
+						{[1, 2].map((group) => (
+							<div key={group} className="nav-group">
+								<Skeleton className="mb-3 ml-3 h-3 w-20 rounded-full" />
+								{[1, 2, 3].map((row) => (
+									<Skeleton
+										key={`${group}-${row}`}
+										className="mb-2 h-9 w-full rounded-lg"
+									/>
+								))}
+							</div>
+						))}
+					</div>
+
+					<div className="sidebar-bottom" aria-hidden="true">
+						<Skeleton className="mb-4 h-16 w-full rounded-xl" />
+						<Skeleton className="mb-3 h-9 w-full rounded-lg" />
+						<div className="profile-button" style={{ paddingTop: 12 }}>
+							<Skeleton className="h-8 w-8 rounded-full" />
+							<div className="profile-copy" style={{ gap: 8, width: '100%' }}>
+								<Skeleton className="h-3 w-16 rounded-full" />
+								<Skeleton className="h-2.5 w-20 rounded-full" />
+							</div>
+						</div>
+					</div>
+				</aside>
+
+				<main className="main-area">
+					<header className="topbar" aria-hidden="true">
+						<Skeleton className="h-5 w-28 rounded-full" />
+						<div className="topbar-actions">
+							<Skeleton className="h-8 w-44 rounded-lg" />
+							<Skeleton className="h-8 w-8 rounded-lg" />
+							<Skeleton className="h-5 w-20 rounded-full" />
+						</div>
+					</header>
+
+					<div className="dashboard-content">
+						<div className="welcome-row" aria-hidden="true">
+							<div className="w-full max-w-[420px]">
+								<Skeleton className="mb-3 h-3 w-28 rounded-full" />
+								<Skeleton className="mb-2 h-10 w-56 rounded-lg" />
+								<Skeleton className="h-4 w-72 rounded-full" />
+							</div>
+							<Skeleton className="h-10 w-36 rounded-lg" />
+						</div>
+
+						<Skeleton className="mb-5 h-14 w-full rounded-xl" />
+
+						<div className="dashboard-grid" aria-hidden="true">
+							<div className="left-column">
+								<Skeleton className="mb-4 h-[300px] w-full rounded-xl" />
+								<Skeleton className="h-[220px] w-full rounded-xl" />
+							</div>
+							<div className="right-column">
+								<Skeleton className="mb-4 h-[240px] w-full rounded-xl" />
+								<Skeleton className="mb-4 h-16 w-full rounded-xl" />
+								<Skeleton className="h-[230px] w-full rounded-xl" />
+							</div>
+						</div>
+					</div>
+				</main>
+			</div>
+		)
+	}
 
 	return (
 		<div className="app-shell">
@@ -244,9 +344,22 @@ function App() {
 				<header className="topbar">
 					<div className="breadcrumb"><span>Mon espace</span><ChevronRight size={14} /><strong>{activeNav}</strong></div>
 					<div className="topbar-actions">
-						<button className="search-button" type="button" onClick={() => setActiveNav('Recherche')}>
-							<Search size={15} /><span>Rechercher</span><kbd><Command size={10} /> K</kbd>
-						</button>
+						<div className="search-button" role="search">
+							<Search size={15} />
+							<Input
+								aria-label="Rechercher"
+								value={searchValue}
+								onChange={(event: ChangeEvent<HTMLInputElement>) => {
+									setSearchValue(event.target.value)
+									if (event.target.value.trim()) {
+										setActiveNav('Recherche')
+									}
+								}}
+								placeholder="Rechercher"
+								className="border-0 bg-transparent p-0 text-xs shadow-none focus-visible:ring-0"
+							/>
+							<kbd><Command size={10} /> K</kbd>
+						</div>
 						<button className="icon-button notification-button" type="button" aria-label="Notifications" onClick={() => setNoticeDismissed(false)}>
 							<Bell size={17} /><i />
 						</button>
@@ -256,111 +369,116 @@ function App() {
 				</header>
 
 				<div className="dashboard-content">
-					{activeNav === 'Vue d’ensemble' ? <>
-					<section className="welcome-row">
-						<div>
-							<p className="eyebrow"><span className="eyebrow-dot" /> VOTRE ATELIER D’ÉCRITURE</p>
-							<h1>Bonjour Nathan <span className="wave">✳</span></h1>
-							<p className="welcome-subtitle">Une nouvelle page vous attend. Où en êtes-vous aujourd’hui ?</p>
-						</div>
-						<button className="primary-button" type="button" onClick={() => setShowQuickStart(true)}>
-							<Plus size={17} /> Nouvelle session
-						</button>
-					</section>
-
-					  {!noticeDismissed && (
-						<section className="notice-banner" aria-label="Conseil d’écriture">
-							<div className="notice-icon"><Lightbulb size={18} /></div>
-							<p><strong>Le saviez-vous ?</strong> Les petites sessions régulières font les grands romans. 15 minutes suffisent pour garder le fil.</p>
-							<button type="button" className="notice-dismiss" aria-label="Fermer le conseil" onClick={() => setNoticeDismissed(true)}><X size={16} /></button>
-						</section>
-					)}
-
-					<section className="dashboard-grid">
-						<div className="left-column">
-							<article className="manuscript-panel">
-								<div className="panel-topline">
-									<div className="section-label"><span className="section-icon ink-icon"><FileText size={15} /></span> VOTRE MANUSCRIT</div>
-									<button className="text-action" type="button" onClick={() => setActiveNav('Manuscrit')}>Ouvrir le manuscrit <ArrowRight size={14} /></button>
+					{activeNav === 'Vue d’ensemble' ? (
+						<>
+							<section className="welcome-row">
+								<div>
+									<p className="eyebrow"><span className="eyebrow-dot" /> VOTRE ATELIER D’ÉCRITURE</p>
+									<h1>Bonjour Nathan <span className="wave">✳</span></h1>
+									<p className="welcome-subtitle">Une nouvelle page vous attend. Où en êtes-vous aujourd’hui ?</p>
 								</div>
-								<div className="manuscript-body">
-									<div className="manuscript-cover" aria-label="Couverture du roman Les marées de verre">
-										<span className="cover-kicker">UN ROMAN DE NATHAN F.</span>
-										<span className="cover-art"><span /><i /><b /></span>
-										<span className="cover-title">Les marées<br />de verre</span>
-										<span className="cover-author">NATHAN F.</span>
-									</div>
-									<div className="manuscript-info">
-										<div className="book-title-row"><div><span className="book-kicker">PROJET EN COURS</span><h2>Les marées de verre</h2></div><button className="icon-button more-button" aria-label="Plus d’options" type="button"><MoreHorizontal size={19} /></button></div>
-										<p className="book-meta">Roman fantastique <span>·</span> Mis à jour il y a 2 h</p>
-										<div className="writing-stats">
-											<div><span className="stat-number">12 480</span><span className="stat-caption">mots écrits</span></div>
-											<span className="stat-separator" />
-											<div><span className="stat-number">8</span><span className="stat-caption">chapitres</span></div>
-											<span className="stat-separator" />
-											<div><span className="stat-number">~ 42 k</span><span className="stat-caption">objectif final</span></div>
+								<Button className="primary-button" type="button" onClick={() => setShowQuickStart(true)}>
+									<Plus size={17} /> Nouvelle session
+								</Button>
+							</section>
+
+							{!noticeDismissed && (
+								<section className="notice-banner" aria-label="Conseil d’écriture">
+									<div className="notice-icon"><Lightbulb size={18} /></div>
+									<p><strong>Le saviez-vous ?</strong> Les petites sessions régulières font les grands romans. 15 minutes suffisent pour garder le fil.</p>
+									<button type="button" className="notice-dismiss" aria-label="Fermer le conseil" onClick={() => setNoticeDismissed(true)}><X size={16} /></button>
+								</section>
+							)}
+
+							<section className="dashboard-grid">
+								<div className="left-column">
+									<article className="manuscript-panel">
+										<div className="panel-topline">
+											<div className="section-label"><span className="section-icon ink-icon"><FileText size={15} /></span> VOTRE MANUSCRIT</div>
+											<button className="text-action" type="button" onClick={() => setActiveNav('Manuscrit')}>Ouvrir le manuscrit <ArrowRight size={14} /></button>
 										</div>
-										<div className="chapter-progress-row"><span>Progression du manuscrit</span><strong>30 %</strong></div>
-										<div className="progress-track"><span style={{ width: '30%' }} /></div>
-										<button className="resume-button" type="button" onClick={() => setActiveNav('Manuscrit')}><BookOpen size={16} /> Reprendre l’écriture <span>Dernière page : chapitre 8, p. 3</span><ArrowRight size={15} /></button>
-									</div>
-								</div>
-							</article>
+										<div className="manuscript-body">
+											<div className="manuscript-cover" aria-label="Couverture du roman Les marées de verre">
+												<span className="cover-kicker">UN ROMAN DE NATHAN F.</span>
+												<span className="cover-art"><span /><i /><b /></span>
+												<span className="cover-title">Les marées<br />de verre</span>
+												<span className="cover-author">NATHAN F.</span>
+											</div>
+											<div className="manuscript-info">
+												<div className="book-title-row"><div><span className="book-kicker">PROJET EN COURS</span><h2>Les marées de verre</h2></div><button className="icon-button more-button" aria-label="Plus d’options" type="button"><MoreHorizontal size={19} /></button></div>
+												<div className="book-meta"><Badge variant="secondary">Roman fantastique</Badge><span>·</span> Mis à jour il y a 2 h</div>
+												<div className="writing-stats">
+													<div><span className="stat-number">12 480</span><span className="stat-caption">mots écrits</span></div>
+													<span className="stat-separator" />
+													<div><span className="stat-number">8</span><span className="stat-caption">chapitres</span></div>
+													<span className="stat-separator" />
+													<div><span className="stat-number">~ 42 k</span><span className="stat-caption">objectif final</span></div>
+												</div>
+												<div className="chapter-progress-row"><span>Progression du manuscrit</span><strong>30 %</strong></div>
+												<div className="progress-track"><span style={{ width: '30%' }} /></div>
+												<Button className="resume-button" type="button" onClick={() => { setActiveNav('Manuscrit'); handleSave() }}><BookOpen size={16} /> Reprendre l’écriture <span>Dernière page : chapitre 8, p. 3</span><ArrowRight size={15} /></Button>
+											</div>
+										</div>
+									</article>
 
-							<article className="chapters-panel">
-								<div className="panel-heading-row">
-									<div><div className="section-label"><span className="section-icon plan-icon"><Compass size={15} /></span> LE PLAN DU ROMAN</div><h2>Votre histoire, en un coup d’œil</h2></div>
-									<button className="text-action" type="button" onClick={() => setActiveNav('Plan du roman')}>Voir le plan <ArrowRight size={14} /></button>
+									<article className="chapters-panel">
+										<div className="panel-heading-row">
+											<div><div className="section-label"><span className="section-icon plan-icon"><Compass size={15} /></span> LE PLAN DU ROMAN</div><h2>Votre histoire, en un coup d’œil</h2></div>
+											<button className="text-action" type="button" onClick={() => setActiveNav('Plan du roman')}>Voir le plan <ArrowRight size={14} /></button>
+										</div>
+										<div className="chapter-list">
+											{chapters.map((chapter) => (
+												<button className={`chapter-row ${chapter.done ? 'chapter-done' : 'chapter-current'}`} key={chapter.number} type="button" onClick={() => setActiveNav('Plan du roman')}>
+													<span className="chapter-number">{chapter.done ? <Check size={13} /> : chapter.number}</span>
+													<span className="chapter-title">{chapter.title}</span>
+													<span className={`chapter-status ${chapter.done ? 'done-status' : ''}`}>{chapter.words}</span>
+													<ChevronRight className="chapter-chevron" size={15} />
+												</button>
+											))}
+										</div>
+									</article>
 								</div>
-								<div className="chapter-list">
-									{chapters.map((chapter) => (
-										<button className={`chapter-row ${chapter.done ? 'chapter-done' : 'chapter-current'}`} key={chapter.number} type="button" onClick={() => setActiveNav('Plan du roman')}>
-											<span className="chapter-number">{chapter.done ? <Check size={13} /> : chapter.number}</span>
-											<span className="chapter-title">{chapter.title}</span>
-											<span className={`chapter-status ${chapter.done ? 'done-status' : ''}`}>{chapter.words}</span>
-											<ChevronRight className="chapter-chevron" size={15} />
-										</button>
-									))}
-								</div>
-							</article>
-						</div>
 
-						<div className="right-column">
-							<article className="goal-panel">
-								<div className="panel-topline">
-									<div className="section-label"><span className="section-icon goal-icon"><Target size={15} /></span> MON RYTHME</div>
-									<div className="goal-menu-wrap">
-										<button className="period-button" type="button" aria-expanded={showGoalMenu} onClick={() => setShowGoalMenu(!showGoalMenu)}>Cette semaine <ChevronDown size={13} /></button>
-										{showGoalMenu && <div className="goal-menu">{[3000, 5000, 7500].map((amount) => <button type="button" key={amount} onClick={() => { setGoal(amount); setShowGoalMenu(false) }}>{amount.toLocaleString('fr-FR')} mots {goal === amount && <Check size={13} />}</button>)}</div>}
-									</div>
-								</div>
-								<div className="goal-numbers"><strong>3 030</strong><span> / {goal.toLocaleString('fr-FR')} mots</span></div>
-								<div className="goal-track"><span style={{ width: `${Math.min(progress, 100)}%` }} /></div>
-								<div className="goal-foot"><span>{progress >= 100 ? 'Objectif atteint !' : `Encore ${Math.max(goal - 3030, 0).toLocaleString('fr-FR')} mots pour atteindre votre objectif`}</span><strong>{progress}%</strong></div>
-								<div className="week-chart" aria-label="Mots écrits chaque jour cette semaine">
-									{weekDays.map((item, index) => <div className="day-column" key={`${item.day}-${index}`}><div className="bar-track"><span className={index === 3 ? 'bar-current' : ''} style={{ height: `${Math.max((item.value / 900) * 100, item.value ? 10 : 3)}%` }} /></div><span className={index === 3 ? 'current-day' : ''}>{item.day}</span></div>)}
-								</div>
-							</article>
+								<div className="right-column">
+									<article className="goal-panel">
+										<div className="panel-topline">
+											<div className="section-label"><span className="section-icon goal-icon"><Target size={15} /></span> MON RYTHME</div>
+											<div className="goal-menu-wrap">
+												<button className="period-button" type="button" aria-expanded={showGoalMenu} onClick={() => setShowGoalMenu(!showGoalMenu)}>Cette semaine <ChevronDown size={13} /></button>
+												{showGoalMenu && <div className="goal-menu">{[3000, 5000, 7500].map((amount) => <button type="button" key={amount} onClick={() => { setGoal(amount); setShowGoalMenu(false) }}>{amount.toLocaleString('fr-FR')} mots {goal === amount && <Check size={13} />}</button>)}</div>}
+											</div>
+										</div>
+										<div className="goal-numbers"><strong>3 030</strong><span> / {goal.toLocaleString('fr-FR')} mots</span></div>
+										<div className="goal-track"><span style={{ width: `${Math.min(progress, 100)}%` }} /></div>
+										<div className="goal-foot"><span>{progress >= 100 ? 'Objectif atteint !' : `Encore ${Math.max(goal - 3030, 0).toLocaleString('fr-FR')} mots pour atteindre votre objectif`}</span><strong>{progress}%</strong></div>
+										<div className="week-chart" aria-label="Mots écrits chaque jour cette semaine">
+											{weekDays.map((item, index) => <div className="day-column" key={`${item.day}-${index}`}><div className="bar-track"><span className={index === 3 ? 'bar-current' : ''} style={{ height: `${Math.max((item.value / 900) * 100, item.value ? 10 : 3)}%` }} /></div><span className={index === 3 ? 'current-day' : ''}>{item.day}</span></div>)}
+										</div>
+									</article>
 
-							<article className="streak-strip"><span className="streak-icon"><Flame size={18} fill="currentColor" /></span><span><strong>4 jours</strong><small>de régularité cette semaine</small></span><div className="streak-dots"><i /><i /><i /><i className="today-streak" /><i /><i /><i /></div></article>
+									<article className="streak-strip"><span className="streak-icon"><Flame size={18} fill="currentColor" /></span><span><strong>4 jours</strong><small>de régularité cette semaine</small></span><div className="streak-dots"><i /><i /><i /><i className="today-streak" /><i /><i /><i /></div></article>
 
-							<article className="alerts-panel">
-								<div className="alerts-heading"><div><div className="section-label"><span className="section-icon alert-icon"><WandSparkles size={15} /></span> RELECTURE IA</div><h2>À garder à l’œil <span className="alert-count">2</span></h2></div><button className="icon-button help-button" aria-label="À propos de la relecture IA" type="button" title="La relecture signale des incohérences sans réécrire votre texte"><CircleHelp size={16} /></button></div>
-								<p className="alerts-intro">Quelques détails à vérifier dans votre histoire.</p>
-								<div className="alert-list">
-									{alerts.map(({ tone, title, detail, icon: Icon }) => <button className="alert-row" type="button" key={title} onClick={() => setActiveNav('Manuscrit')}><span className={`alert-symbol ${tone}`}><Icon size={15} /></span><span className="alert-copy"><strong>{title}</strong><small>{detail}</small></span><ChevronRight size={15} /></button>)}
+									<article className="alerts-panel">
+										<div className="alerts-heading"><div><div className="section-label"><span className="section-icon alert-icon"><WandSparkles size={15} /></span> RELECTURE IA</div><h2>À garder à l’œil <span className="alert-count">2</span></h2></div><button className="icon-button help-button" aria-label="À propos de la relecture IA" type="button" title="La relecture signale des incohérences sans réécrire votre texte"><CircleHelp size={16} /></button></div>
+										<p className="alerts-intro">Quelques détails à vérifier dans votre histoire.</p>
+										<div className="alert-list">
+											{alerts.map(({ tone, title, detail, icon: Icon }) => <button className="alert-row" type="button" key={title} onClick={() => setActiveNav('Manuscrit')}><span className={`alert-symbol ${tone}`}><Icon size={15} /></span><span className="alert-copy"><strong>{title}</strong><small>{detail}</small></span><ChevronRight size={15} /></button>)}
+										</div>
+										<button className="all-alerts-button" type="button" onClick={() => setShowAllAlerts(!showAllAlerts)}>{showAllAlerts ? 'Réduire' : 'Voir les 2 alertes'} <ArrowRight size={14} /></button>
+									</article>
 								</div>
-								<button className="all-alerts-button" type="button" onClick={() => setShowAllAlerts(!showAllAlerts)}>{showAllAlerts ? 'Réduire' : 'Voir les 2 alertes'} <ArrowRight size={14} /></button>
-							</article>
-						</div>
-					</section>
+							</section>
 
-					<footer className="dashboard-footer"><span>Votre espace d’écriture, à votre rythme.</span><span><span className="sync-dot" /> Tout est enregistré <span className="footer-separator">·</span> <button type="button" onClick={() => setActiveNav('Aide')}>Besoin d’aide ?</button></span></footer>
-					</> : <WorkspacePage page={activeNav} onNavigate={setActiveNav} />}
+							<footer className="dashboard-footer"><span>Votre espace d’écriture, à votre rythme.</span><span><span className="sync-dot" /> Tout est enregistré <span className="footer-separator">·</span> <button type="button" onClick={() => setActiveNav('Aide')}>Besoin d’aide ?</button></span></footer>
+						</>
+					) : (
+						<WorkspacePage page={activeNav} onNavigate={setActiveNav} />
+					)}
 				</div>
 			</main>
 
-			{showQuickStart && <div className="modal-backdrop" role="presentation" onClick={() => setShowQuickStart(false)}><section className="quick-modal" role="dialog" aria-modal="true" aria-labelledby="quick-modal-title" onClick={(event) => event.stopPropagation()}><button className="icon-button modal-close" type="button" aria-label="Fermer" onClick={() => setShowQuickStart(false)}><X size={18} /></button><span className="modal-sparkle"><Sparkles size={19} /></span><p className="eyebrow">UNE PETITE SESSION, UN GRAND PAS</p><h2 id="quick-modal-title">On reprend le fil ?</h2><p className="modal-description">Votre dernière session s’est arrêtée au chapitre 8. Installez-vous, votre histoire vous attend.</p><div className="modal-session-info"><BookOpen size={17} /><span><strong>Les marées de verre</strong><small>Chapitre 8 · dernière page, p. 3</small></span><ArrowDownRight size={16} /></div><button className="primary-button modal-start" type="button" onClick={() => { setShowQuickStart(false); setActiveNav('Manuscrit') }}>Commencer à écrire <ArrowRight size={15} /></button><button className="modal-later" type="button" onClick={() => setShowQuickStart(false)}>Je reviendrai plus tard</button></section></div>}
+			{showQuickStart && <div className="modal-backdrop" role="presentation" onClick={() => setShowQuickStart(false)}><section className="quick-modal" role="dialog" aria-modal="true" aria-labelledby="quick-modal-title" onClick={(event) => event.stopPropagation()}><button className="icon-button modal-close" type="button" aria-label="Fermer" onClick={() => setShowQuickStart(false)}><X size={18} /></button><span className="modal-sparkle"><Sparkles size={19} /></span><p className="eyebrow">UNE PETITE SESSION, UN GRAND PAS</p><h2 id="quick-modal-title">On reprend le fil ?</h2><p className="modal-description">Votre dernière session s’est arrêtée au chapitre 8. Installez-vous, votre histoire vous attend.</p><div className="modal-session-info"><BookOpen size={17} /><span><strong>Les marées de verre</strong><small>Chapitre 8 · dernière page, p. 3</small></span><ArrowDownRight size={16} /></div><Button className="primary-button modal-start" type="button" onClick={() => { setShowQuickStart(false); setActiveNav('Manuscrit'); handleSave() }}>Commencer à écrire <ArrowRight size={15} /></Button><button className="modal-later" type="button" onClick={() => setShowQuickStart(false)}>Je reviendrai plus tard</button></section></div>}
+			<Toaster />
 		</div>
 	)
 }
