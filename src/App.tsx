@@ -5,6 +5,7 @@ import {
 	ArrowUpRight,
 	Bell,
 	BookOpen,
+	CalendarDays,
 	Check,
 	ChevronDown,
 	ChevronRight,
@@ -16,15 +17,20 @@ import {
 	Flame,
 	FolderOpen,
 	Globe2,
+	MapPin,
 	LayoutDashboard,
 	Lightbulb,
 	MoreHorizontal,
+	PenLine,
 	Plus,
 	Search,
+	Save,
+	SlidersHorizontal,
 	Settings2,
 	Sparkles,
 	Target,
 	Users,
+	UserRound,
 	WandSparkles,
 	X,
 } from 'lucide-react'
@@ -66,6 +72,102 @@ const weekDays = [
 	{ day: 'S', value: 220 },
 	{ day: 'D', value: 0 },
 ]
+
+const characterData = [
+	{ name: 'Élise Moreau', role: 'Protagoniste', detail: 'Cartographe · 28 ans', color: 'sage' },
+	{ name: 'Soren Vahl', role: 'Allié', detail: 'Gardien du phare · 34 ans', color: 'blue' },
+	{ name: 'Maëlle', role: 'Personnage secondaire', detail: 'Pêcheuse · âge inconnu', color: 'rose' },
+]
+
+const searchableItems = [
+	{ title: 'Les marées de verre', type: 'Projet', page: 'Mes projets' },
+	{ title: 'Élise Moreau', type: 'Personnage', page: 'Personnages' },
+	{ title: 'Soren Vahl', type: 'Personnage', page: 'Personnages' },
+	{ title: 'Le phare des Aiguilles', type: 'Lieu', page: 'Mon univers' },
+	{ title: 'La maison des marées', type: 'Chapitre', page: 'Plan du roman' },
+	{ title: 'Les noms oubliés', type: 'Chapitre', page: 'Manuscrit' },
+]
+
+function WorkspacePage({ page, onNavigate }: { page: string; onNavigate: (page: string) => void }) {
+	const [query, setQuery] = useState('')
+	const [draft, setDraft] = useState('La brume avait recouvert le port avant même le lever du soleil. Élise connaissait ce silence : celui qui précédait les grandes marées.')
+	const [saved, setSaved] = useState(true)
+	const [selectedChapter, setSelectedChapter] = useState('Les noms oubliés')
+	const [showProjectForm, setShowProjectForm] = useState(false)
+	const [newProject, setNewProject] = useState('')
+	const [projects, setProjects] = useState(['Les marées de verre', 'Le jardin des heures'])
+	const [extraChapter, setExtraChapter] = useState(false)
+	const [message, setMessage] = useState('')
+	const filteredCharacters = characterData.filter((character) => `${character.name} ${character.role} ${character.detail}`.toLowerCase().includes(query.toLowerCase()))
+	const filteredSearch = searchableItems.filter((item) => `${item.title} ${item.type}`.toLowerCase().includes(query.toLowerCase()))
+	const planActs: { title: string; chapters: typeof chapters }[] = [
+		{ title: 'ACTE I · LE DÉCLENCHEUR', chapters: chapters.slice(0, 2) },
+		{ title: 'ACTE II · LE POINT DE RUPTURE', chapters: chapters.slice(2) },
+		{ title: 'ACTE III · LE DÉNOUEMENT', chapters: extraChapter ? [{ number: '04', title: 'Le jardin englouti', words: 'À écrire', done: false }] : [] },
+	]
+
+	const pageDescription: Record<string, string> = {
+		'Mes projets': 'Retrouvez vos histoires et reprenez le fil de chacune.',
+		Manuscrit: 'Écrivez votre histoire, un passage après l’autre.',
+		'Mon univers': 'Les lieux, les objets et les repères qui donnent vie à votre roman.',
+		Personnages: 'Faites connaissance avec celles et ceux qui peuplent votre histoire.',
+		'Plan du roman': 'Structurez votre récit et gardez le cap de votre intrigue.',
+		Paramètres: 'Personnalisez votre espace d’écriture.',
+		'Mon profil': 'Gérez les informations de votre compte auteur.',
+		Recherche: 'Retrouvez rapidement un élément de votre espace.',
+		Aide: 'Quelques réponses pour vous accompagner dans votre atelier.',
+	}
+
+	return (
+		<section className="workspace-page">
+			<div className="workspace-heading">
+				<div>
+					<p className="eyebrow"><span className="eyebrow-dot" /> VOTRE ESPACE D’ÉCRITURE</p>
+					<h1>{page}</h1>
+					<p className="welcome-subtitle">{pageDescription[page] ?? 'Votre espace Parchy.'}</p>
+				</div>
+				{page === 'Mes projets' && <button className="primary-button" type="button" onClick={() => setShowProjectForm(!showProjectForm)}><Plus size={16} /> Nouveau projet</button>}
+				{page === 'Manuscrit' && <button className="primary-button" type="button" onClick={() => { setSaved(true); setMessage('Brouillon enregistré sur cet appareil.') }}><Save size={15} /> Enregistrer</button>}
+				{page === 'Plan du roman' && <button className="primary-button" type="button" onClick={() => setExtraChapter(true)}><Plus size={16} /> Ajouter un chapitre</button>}
+			</div>
+
+			{message && <div className="workspace-message" role="status"><Check size={15} />{message}<button type="button" aria-label="Fermer le message" onClick={() => setMessage('')}><X size={14} /></button></div>}
+
+			{page === 'Mes projets' && <div className="workspace-panel project-list-panel">
+				<div className="workspace-panel-heading"><div><span className="book-kicker">VOTRE BIBLIOTHÈQUE</span><h2>{projects.length} projets</h2></div><span className="project-filter-label"><SlidersHorizontal size={14} /> Tous les projets</span></div>
+				{showProjectForm && <form className="new-project-form" onSubmit={(event) => { event.preventDefault(); if (!newProject.trim()) return; setProjects([newProject.trim(), ...projects]); setNewProject(''); setShowProjectForm(false); setMessage('Projet ajouté à votre bibliothèque.') }}><input aria-label="Nom du projet" placeholder="Donnez un nom à votre projet" value={newProject} onChange={(event) => setNewProject(event.target.value)} autoFocus /><button className="primary-button" type="submit"><Plus size={15} /> Créer</button></form>}
+				<div className="project-list">{projects.map((title, index) => <button className="project-list-row" type="button" key={title} onClick={() => onNavigate('Manuscrit')}><span className={`project-list-cover cover-tone-${index % 2}`}>{index === 0 ? 'M&' : 'JH'}</span><span className="project-list-copy"><strong>{title}</strong><small>{index === 0 ? 'Roman fantastique · 12 480 mots · 8 chapitres' : 'Roman en préparation · Projet récent'}</small></span><span className="project-list-date"><span className="status-dot" />{index === 0 ? 'Modifié il y a 2 h' : 'Modifié hier'}</span><ArrowRight size={16} /></button>)}</div>
+			</div>}
+
+			{page === 'Manuscrit' && <div className="workspace-panel writing-workspace">
+				<aside className="writing-outline"><div className="workspace-panel-heading"><div><span className="book-kicker">LES MARÉES DE VERRE</span><h2>Chapitres</h2></div><MoreHorizontal size={18} /></div>{[...chapters, ...(extraChapter ? [{ number: '04', title: 'Le jardin englouti', words: 'À écrire', done: false }] : [])].map((chapter) => <button className={`outline-chapter ${selectedChapter === chapter.title ? 'selected' : ''}`} key={chapter.number} type="button" onClick={() => { setSelectedChapter(chapter.title); setSaved(true) }}><span>{chapter.number}</span>{chapter.title}<small>{chapter.words}</small></button>)}</aside>
+				<div className="writing-editor"><div className="editor-toolbar"><span><PenLine size={14} /> {selectedChapter}</span><span className={saved ? 'saved-state' : 'unsaved-state'}><i />{saved ? 'Enregistré' : 'Modifications non enregistrées'}</span></div><textarea aria-label="Texte du manuscrit" value={draft} onChange={(event) => { setDraft(event.target.value); setSaved(false); setMessage('') }} /><div className="editor-footer"><span>{draft.trim().split(/\s+/).filter(Boolean).length} mots dans ce passage</span><button type="button" onClick={() => { setSaved(true); setMessage('Brouillon enregistré sur cet appareil.') }}><Save size={14} /> Enregistrer le brouillon</button></div></div>
+			</div>}
+
+			{page === 'Mon univers' && <>
+				<div className="universe-stats"><div className="workspace-panel universe-stat"><span className="section-icon ink-icon"><Users size={16} /></span><strong>12</strong><small>Personnages</small><button type="button" onClick={() => onNavigate('Personnages')}>Explorer <ArrowRight size={13} /></button></div><div className="workspace-panel universe-stat"><span className="section-icon plan-icon"><MapPin size={16} /></span><strong>8</strong><small>Lieux</small><button type="button" onClick={() => setMessage('La collection des lieux est à jour.')}>Explorer <ArrowRight size={13} /></button></div><div className="workspace-panel universe-stat"><span className="section-icon goal-icon"><CalendarDays size={16} /></span><strong>14</strong><small>Repères chronologiques</small><button type="button" onClick={() => setMessage('La chronologie de votre roman est à jour.')}>Explorer <ArrowRight size={13} /></button></div></div>
+				<div className="workspace-panel universe-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">LES MARÉES DE VERRE</span><h2>Éléments récemment consultés</h2></div><button className="text-action" type="button" onClick={() => onNavigate('Personnages')}>Voir les personnages <ArrowRight size={14} /></button></div><div className="universe-entry-list"><button type="button" onClick={() => onNavigate('Personnages')}><span className="universe-entry-icon character-entry"><Users size={17} /></span><span><strong>Élise Moreau</strong><small>Personnage · Protagoniste</small></span><ChevronRight size={15} /></button><button type="button" onClick={() => setMessage('Fiche du phare des Aiguilles sélectionnée.')}><span className="universe-entry-icon place-entry"><MapPin size={17} /></span><span><strong>Le phare des Aiguilles</strong><small>Lieu · Côte nord</small></span><ChevronRight size={15} /></button><button type="button" onClick={() => setMessage('Repère chronologique sélectionné.')}><span className="universe-entry-icon time-entry"><CalendarDays size={17} /></span><span><strong>La grande marée</strong><small>Événement · 17e jour d’automne</small></span><ChevronRight size={15} /></button></div></div>
+			</>}
+
+			{page === 'Personnages' && <div className="workspace-panel character-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">LES MARÉES DE VERRE</span><h2>Personnages principaux</h2></div><label className="inline-search"><Search size={14} /><input aria-label="Filtrer les personnages" placeholder="Filtrer" value={query} onChange={(event) => setQuery(event.target.value)} /></label></div><div className="character-grid">{filteredCharacters.map((character, index) => <article className="character-card" key={character.name}><div className={`character-avatar ${character.color}`}>{character.name.split(' ').map((part) => part[0]).slice(0, 2).join('')}</div><span className="book-kicker">{character.role.toUpperCase()}</span><h3>{character.name}</h3><p>{character.detail}</p><div className="character-card-footer"><span><FileText size={13} /> Présent dans {index === 0 ? '6' : '3'} chapitres</span><button type="button" aria-label={`Ouvrir la fiche de ${character.name}`} onClick={() => setMessage(`Fiche de ${character.name} sélectionnée.`)}><ArrowRight size={15} /></button></div></article>)}{filteredCharacters.length === 0 && <p className="empty-state">Aucun personnage ne correspond à cette recherche.</p>}</div></div>}
+
+			{page === 'Plan du roman' && <div className="workspace-panel outline-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">STRUCTURE EN 3 ACTES</span><h2>Les marées de verre</h2></div><span className="plan-progress-label">8 chapitres · 30 % du manuscrit</span></div>{planActs.map((act) => <section className="act-section" key={act.title}><h3>{act.title}</h3>{act.chapters.map((chapter) => <button className={`outline-plan-row ${selectedChapter === chapter.title ? 'selected' : ''}`} type="button" key={chapter.number} onClick={() => setSelectedChapter(chapter.title)}><span className="plan-row-number">{chapter.number}</span><span>{chapter.title}</span><small>{chapter.words}</small><ChevronRight size={15} /></button>)}{act.title.includes('ACTE III') && !extraChapter && <p className="empty-act">Votre dénouement prendra forme ici.</p>}</section>)}</div>}
+
+			{page === 'Paramètres' && <div className="workspace-panel settings-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">PRÉFÉRENCES</span><h2>Votre espace d’écriture</h2></div></div><label className="setting-row"><span><strong>Sauvegarde automatique</strong><small>Enregistrer les modifications pendant l’écriture</small></span><input type="checkbox" defaultChecked /></label><label className="setting-row"><span><strong>Rappels d’écriture</strong><small>Recevoir un rappel les jours où vous écrivez</small></span><input type="checkbox" /></label><label className="setting-row"><span><strong>Alertes de cohérence</strong><small>Afficher les incohérences détectées dans le manuscrit</small></span><input type="checkbox" defaultChecked /></label><label className="setting-row"><span><strong>Objectif hebdomadaire</strong><small>Nombre de mots visé chaque semaine</small></span><select defaultValue="5000"><option value="3000">3 000 mots</option><option value="5000">5 000 mots</option><option value="7500">7 500 mots</option></select></label></div>}
+
+			{page === 'Mon profil' && <div className="workspace-panel profile-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">COMPTE AUTEUR</span><h2>Informations personnelles</h2></div></div><div className="profile-summary"><span className="profile-avatar-large">NF</span><span><strong>Nathan F.</strong><small>Auteur depuis octobre 2025</small></span><button type="button" onClick={() => setMessage('Le changement de photo sera disponible prochainement.')}><UserRound size={14} /> Modifier la photo</button></div><label className="profile-field">Nom affiché<input defaultValue="Nathan F." /></label><label className="profile-field">Adresse e-mail<input type="email" defaultValue="nathan@example.com" /></label><label className="profile-field">Formule actuelle<input value="Gratuit" readOnly /></label><button className="primary-button profile-save" type="button" onClick={() => setMessage('Vos informations ont été enregistrées sur cet appareil.')}><Save size={15} /> Enregistrer les modifications</button></div>}
+
+			{page === 'Recherche' && <div className="workspace-panel search-panel"><label className="large-search"><Search size={19} /><input autoFocus placeholder="Un personnage, un lieu, un chapitre…" value={query} onChange={(event) => setQuery(event.target.value)} /></label><div className="workspace-panel-heading"><div><span className="book-kicker">DANS VOTRE ESPACE</span><h2>{query ? `${filteredSearch.length} résultat${filteredSearch.length > 1 ? 's' : ''}` : 'Suggestions récentes'}</h2></div></div><div className="search-results">{filteredSearch.map((item) => <button type="button" key={item.title} onClick={() => onNavigate(item.page)}><span className="search-result-icon"><Search size={14} /></span><span><strong>{item.title}</strong><small>{item.type}</small></span><ArrowUpRight size={15} /></button>)}{filteredSearch.length === 0 && <p className="empty-state">Aucun résultat. Essayez un autre terme.</p>}</div></div>}
+
+			{page === 'Aide' && <div className="workspace-panel help-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">CENTRE D’AIDE</span><h2>Comment pouvons-nous vous aider ?</h2></div></div><label className="large-search"><Search size={17} /><input placeholder="Rechercher dans l’aide" value={query} onChange={(event) => setQuery(event.target.value)} /></label><div className="faq-list">{[
+				['Comment organiser mon roman ?', 'Utilisez le Plan du roman pour répartir votre histoire en actes, chapitres et scènes. Vous pouvez déplacer vos idées au fil de l’écriture.'],
+				['Mes textes sont-ils sauvegardés automatiquement ?', 'Votre brouillon est conservé pendant votre session. Pensez à enregistrer vos modifications avant de quitter l’éditeur.'],
+				['Que fait la relecture IA ?', 'Elle signale des incohérences possibles de chronologie, de personnages ou de faits. Elle ne réécrit jamais votre texte.'],
+				['Puis-je travailler hors ligne ?', 'Le mode hors ligne et la synchronisation sont prévus pour garder votre manuscrit accessible sans connexion.'],
+			].filter(([question]) => question.toLowerCase().includes(query.toLowerCase())).map(([question, answer]) => <details key={question}><summary>{question}<ChevronDown size={15} /></summary><p>{answer}</p></details>)}</div></div>}
+		</section>
+	)
+}
 
 function App() {
 	const [activeNav, setActiveNav] = useState('Vue d’ensemble')
@@ -154,6 +256,7 @@ function App() {
 				</header>
 
 				<div className="dashboard-content">
+					{activeNav === 'Vue d’ensemble' ? <>
 					<section className="welcome-row">
 						<div>
 							<p className="eyebrow"><span className="eyebrow-dot" /> VOTRE ATELIER D’ÉCRITURE</p>
@@ -253,6 +356,7 @@ function App() {
 					</section>
 
 					<footer className="dashboard-footer"><span>Votre espace d’écriture, à votre rythme.</span><span><span className="sync-dot" /> Tout est enregistré <span className="footer-separator">·</span> <button type="button" onClick={() => setActiveNav('Aide')}>Besoin d’aide ?</button></span></footer>
+					</> : <WorkspacePage page={activeNav} onNavigate={setActiveNav} />}
 				</div>
 			</main>
 
