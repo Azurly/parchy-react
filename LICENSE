@@ -1,0 +1,51 @@
+Copyright (c) 2026 Amélie FLORENT et Nathan HEMERY. Tous droits réservés.
+
+LICENCE PROPRIÉTAIRE — PARCHY
+
+1. Titulaires des droits
+   Le logiciel Parchy, y compris son code source, son code objet, sa
+   documentation, ses interfaces graphiques, ses bases de données et tout
+   élément associé (ci-après « le Logiciel »), est la propriété exclusive
+   d'Amélie FLORENT et de Nathan HEMERY (ci-après « les Auteurs »).
+
+2. Absence de cession
+   Aucune disposition de ce dépôt ne cède ni ne concède de droit de
+   propriété intellectuelle sur le Logiciel. L'accès au code source ne
+   vaut pas licence.
+
+3. Interdictions
+   Sauf autorisation écrite et préalable des Auteurs, il est interdit de :
+   a) reproduire, copier ou télécharger tout ou partie du Logiciel ;
+   b) modifier, adapter, traduire ou créer des œuvres dérivées du Logiciel ;
+   c) distribuer, publier, louer, prêter, vendre ou sous-licencier le
+      Logiciel, à titre gratuit ou onéreux ;
+   d) exploiter le Logiciel pour fournir un service à des tiers ;
+   e) décompiler, désassembler ou procéder à de l'ingénierie inverse,
+      hors des cas expressément autorisés par l'article L. 122-6-1 du
+      Code de la propriété intellectuelle.
+
+4. Utilisation du service
+   L'utilisation du service en ligne Parchy par ses utilisateurs est régie
+   exclusivement par les Conditions générales d'utilisation publiées sur
+   le site du service. Les contenus créés par les utilisateurs (textes,
+   fiches, univers) restent leur propriété et ne sont pas couverts par la
+   présente licence.
+
+5. Composants tiers
+   Le Logiciel peut intégrer des composants tiers distribués sous leur
+   propre licence. Ces composants restent soumis à leur licence d'origine,
+   dont la liste figure dans les fichiers de dépendances du projet
+   (composer.json, package.json).
+
+6. Absence de garantie
+   LE LOGICIEL EST FOURNI « EN L'ÉTAT », SANS GARANTIE D'AUCUNE SORTE,
+   EXPRESSE OU IMPLICITE. EN AUCUN CAS LES AUTEURS NE POURRONT ÊTRE TENUS
+   RESPONSABLES DE TOUT DOMMAGE RÉSULTANT DE L'UTILISATION OU DE
+   L'IMPOSSIBILITÉ D'UTILISER LE LOGICIEL EN DEHORS DU CADRE AUTORISÉ.
+
+7. Droit applicable
+   La présente licence est régie par le droit français. Tout litige relatif
+   à son interprétation ou à son exécution relève de la compétence des
+   tribunaux français.
+
+Pour toute demande d'autorisation : contacter les Auteurs.
