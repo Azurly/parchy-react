@@ -124,7 +124,18 @@ Variables principales, à renseigner dans `backend/.env.local` et `frontend/.env
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Paiement |
 | `STORAGE_S3_*` | Stockage des exports et des images |
 | `GOTENBERG_URL` | Génération des PDF |
-| `NEXT_PUBLIC_API_URL` | URL de l'API côté front |
+| `VITE_API_URL` | URL de l'API Symfony (par défaut : `http://localhost:8000/api`) |
+
+## Image Docker
+
+Depuis le dossier `parchy-react` :
+
+```bash
+docker build --build-arg VITE_API_URL=http://localhost:8000/api -t parchy-react .
+docker run --rm -p 3000:80 parchy-react
+```
+
+L'application est ensuite disponible sur http://localhost:3000. `VITE_API_URL` est intégrée au bundle lors de la construction de l'image ; en production, indiquez l'URL publique de l'API.
 
 ## Commandes utiles
 

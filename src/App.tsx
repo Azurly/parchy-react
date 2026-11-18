@@ -20,6 +20,7 @@ import {
 	MapPin,
 	LayoutDashboard,
 	Lightbulb,
+	LogOut,
 	MoreHorizontal,
 	PenLine,
 	Plus,
@@ -39,6 +40,19 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Toaster, toast } from '@/components/ui/toast'
+import AuthScreen from '@/components/auth-screen'
+import {
+	ApiError,
+	clearStoredToken,
+	createProject,
+	getApiErrorMessage,
+	getCurrentUser,
+	getProjects,
+	getStoredToken,
+	storeToken,
+	type Projet,
+	type Utilisateur,
+} from '@/lib/api'
 import './App.css'
 
 type NavItem = { label: string; icon: typeof LayoutDashboard; count?: string }
@@ -93,14 +107,26 @@ const searchableItems = [
 	{ title: 'Les noms oubliés', type: 'Chapitre', page: 'Manuscrit' },
 ]
 
-function WorkspacePage({ page, onNavigate }: { page: string; onNavigate: (page: string) => void }) {
+function WorkspacePage({
+	page,
+	onNavigate,
+	projects,
+	user,
+	onCreateProject,
+}: {
+	page: string
+	onNavigate: (page: string) => void
+	projects: Projet[]
+	user: Utilisateur
+	onCreateProject: (title: string) => Promise<boolean>
+}) {
 	const [query, setQuery] = useState('')
 	const [draft, setDraft] = useState('La brume avait recouvert le port avant même le lever du soleil. Élise connaissait ce silence : celui qui précédait les grandes marées.')
 	const [saved, setSaved] = useState(true)
 	const [selectedChapter, setSelectedChapter] = useState('Les noms oubliés')
 	const [showProjectForm, setShowProjectForm] = useState(false)
 	const [newProject, setNewProject] = useState('')
-	const [projects, setProjects] = useState(['Les marées de verre', 'Le jardin des heures'])
+	const [isCreatingProject, setIsCreatingProject] = useState(false)
 	const [extraChapter, setExtraChapter] = useState(false)
 	const [message, setMessage] = useState('')
 	const filteredCharacters = characterData.filter((character) => `${character.name} ${character.role} ${character.detail}`.toLowerCase().includes(query.toLowerCase()))
@@ -140,8 +166,8 @@ function WorkspacePage({ page, onNavigate }: { page: string; onNavigate: (page: 
 
 			{page === 'Mes projets' && <div className="workspace-panel project-list-panel">
 				<div className="workspace-panel-heading"><div><span className="book-kicker">VOTRE BIBLIOTHÈQUE</span><h2>{projects.length} projets</h2></div><span className="project-filter-label"><SlidersHorizontal size={14} /> Tous les projets</span></div>
-				{showProjectForm && <form className="new-project-form" onSubmit={(event) => { event.preventDefault(); if (!newProject.trim()) return; setProjects([newProject.trim(), ...projects]); setNewProject(''); setShowProjectForm(false); setMessage('Projet ajouté à votre bibliothèque.') }}><input aria-label="Nom du projet" placeholder="Donnez un nom à votre projet" value={newProject} onChange={(event) => setNewProject(event.target.value)} autoFocus /><button className="primary-button" type="submit"><Plus size={15} /> Créer</button></form>}
-				<div className="project-list">{projects.map((title, index) => <button className="project-list-row" type="button" key={title} onClick={() => onNavigate('Manuscrit')}><span className={`project-list-cover cover-tone-${index % 2}`}>{index === 0 ? 'M&' : 'JH'}</span><span className="project-list-copy"><strong>{title}</strong><small>{index === 0 ? 'Roman fantastique · 12 480 mots · 8 chapitres' : 'Roman en préparation · Projet récent'}</small></span><span className="project-list-date"><span className="status-dot" />{index === 0 ? 'Modifié il y a 2 h' : 'Modifié hier'}</span><ArrowRight size={16} /></button>)}</div>
+				{showProjectForm && <form className="new-project-form" onSubmit={async (event) => { event.preventDefault(); if (!newProject.trim() || isCreatingProject) return; setIsCreatingProject(true); const created = await onCreateProject(newProject.trim()); setIsCreatingProject(false); if (!created) return; setNewProject(''); setShowProjectForm(false); setMessage('Projet ajouté à votre bibliothèque.') }}><input aria-label="Nom du projet" placeholder="Donnez un nom à votre projet" value={newProject} onChange={(event) => setNewProject(event.target.value)} autoFocus /><button className="primary-button" type="submit" disabled={isCreatingProject}><Plus size={15} /> {isCreatingProject ? 'Création…' : 'Créer'}</button></form>}
+				{projects.length === 0 ? <p className="empty-state">Votre bibliothèque est vide. Créez votre premier projet.</p> : <div className="project-list">{projects.map((project, index) => <button className="project-list-row" type="button" key={project['@id']} onClick={() => onNavigate('Manuscrit')}><span className={`project-list-cover cover-tone-${index % 2}`}>{project.titre.slice(0, 2).toUpperCase()}</span><span className="project-list-copy"><strong>{project.titre}</strong><small>{project.genre || project.statut}</small></span><span className="project-list-date"><span className="status-dot" />{project.statut}</span><ArrowRight size={16} /></button>)}</div>}
 			</div>}
 
 			{page === 'Manuscrit' && <div className="workspace-panel writing-workspace">
@@ -160,7 +186,7 @@ function WorkspacePage({ page, onNavigate }: { page: string; onNavigate: (page: 
 
 			{page === 'Paramètres' && <div className="workspace-panel settings-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">PRÉFÉRENCES</span><h2>Votre espace d’écriture</h2></div></div><label className="setting-row"><span><strong>Sauvegarde automatique</strong><small>Enregistrer les modifications pendant l’écriture</small></span><input type="checkbox" defaultChecked /></label><label className="setting-row"><span><strong>Rappels d’écriture</strong><small>Recevoir un rappel les jours où vous écrivez</small></span><input type="checkbox" /></label><label className="setting-row"><span><strong>Alertes de cohérence</strong><small>Afficher les incohérences détectées dans le manuscrit</small></span><input type="checkbox" defaultChecked /></label><label className="setting-row"><span><strong>Objectif hebdomadaire</strong><small>Nombre de mots visé chaque semaine</small></span><select defaultValue="5000"><option value="3000">3 000 mots</option><option value="5000">5 000 mots</option><option value="7500">7 500 mots</option></select></label></div>}
 
-			{page === 'Mon profil' && <div className="workspace-panel profile-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">COMPTE AUTEUR</span><h2>Informations personnelles</h2></div></div><div className="profile-summary"><span className="profile-avatar-large">NF</span><span><strong>Nathan F.</strong><small>Auteur depuis octobre 2025</small></span><button type="button" onClick={() => setMessage('Le changement de photo sera disponible prochainement.')}><UserRound size={14} /> Modifier la photo</button></div><label className="profile-field">Nom affiché<input defaultValue="Nathan F." /></label><label className="profile-field">Adresse e-mail<input type="email" defaultValue="nathan@example.com" /></label><label className="profile-field">Formule actuelle<input value="Gratuit" readOnly /></label><button className="primary-button profile-save" type="button" onClick={() => setMessage('Vos informations ont été enregistrées sur cet appareil.')}><Save size={15} /> Enregistrer les modifications</button></div>}
+			{page === 'Mon profil' && <div className="workspace-panel profile-panel"><div className="workspace-panel-heading"><div><span className="book-kicker">COMPTE AUTEUR</span><h2>Informations personnelles</h2></div></div><div className="profile-summary"><span className="profile-avatar-large">{user.nomAffichage.slice(0, 2).toUpperCase()}</span><span><strong>{user.nomAffichage}</strong><small>{user.email}</small></span><button type="button" onClick={() => setMessage('Le changement de photo sera disponible prochainement.')}><UserRound size={14} /> Modifier la photo</button></div><label className="profile-field">Nom affiché<input defaultValue={user.nomAffichage} readOnly /></label><label className="profile-field">Adresse e-mail<input type="email" value={user.email} readOnly /></label><label className="profile-field">Formule actuelle<input value="Gratuit" readOnly /></label></div>}
 
 			{page === 'Recherche' && <div className="workspace-panel search-panel"><label className="large-search"><Search size={19} /><input autoFocus placeholder="Un personnage, un lieu, un chapitre…" value={query} onChange={(event) => setQuery(event.target.value)} /></label><div className="workspace-panel-heading"><div><span className="book-kicker">DANS VOTRE ESPACE</span><h2>{query ? `${filteredSearch.length} résultat${filteredSearch.length > 1 ? 's' : ''}` : 'Suggestions récentes'}</h2></div></div><div className="search-results">{filteredSearch.map((item) => <button type="button" key={item.title} onClick={() => onNavigate(item.page)}><span className="search-result-icon"><Search size={14} /></span><span><strong>{item.title}</strong><small>{item.type}</small></span><ArrowUpRight size={15} /></button>)}{filteredSearch.length === 0 && <p className="empty-state">Aucun résultat. Essayez un autre terme.</p>}</div></div>}
 
@@ -175,22 +201,106 @@ function WorkspacePage({ page, onNavigate }: { page: string; onNavigate: (page: 
 }
 
 function App() {
-	const [activeNav, setActiveNav] = useState('Vue d’ensemble')
+	const [activeNav, setActiveNav] = useState('Mes projets')
 	const [noticeDismissed, setNoticeDismissed] = useState(false)
 	const [goal, setGoal] = useState(5000)
 	const [showGoalMenu, setShowGoalMenu] = useState(false)
 	const [showAllAlerts, setShowAllAlerts] = useState(false)
 	const [showQuickStart, setShowQuickStart] = useState(false)
 	const [searchValue, setSearchValue] = useState('')
-	const [isLoading, setIsLoading] = useState(true)
+	const [user, setUser] = useState<Utilisateur | null>(null)
+	const [token, setToken] = useState<string | null>(null)
+	const [projects, setProjects] = useState<Projet[]>([])
+	const [apiError, setApiError] = useState('')
+	const [isLoading, setIsLoading] = useState(() => getStoredToken() !== null)
 
 	useEffect(() => {
-		const timer = window.setTimeout(() => {
-			setIsLoading(false)
-		}, 900)
+		let active = true
+		const savedToken = getStoredToken()
 
-		return () => window.clearTimeout(timer)
+		if (!savedToken) {
+			return () => { active = false }
+		}
+		const sessionToken = savedToken
+
+		async function restoreSession() {
+			try {
+				const currentUser = await getCurrentUser(sessionToken)
+				if (!active) return
+				setToken(sessionToken)
+				setUser(currentUser)
+
+				try {
+					setProjects(await getProjects(sessionToken))
+				} catch (error) {
+					if (!active) return
+					if (error instanceof ApiError && error.status === 401) {
+						clearStoredToken()
+						setToken(null)
+						setUser(null)
+						setApiError('Votre session a expiré. Veuillez vous reconnecter.')
+					} else {
+						setApiError(getApiErrorMessage(error))
+					}
+				}
+			} catch (error) {
+				if (!active) return
+				if (error instanceof ApiError && error.status === 401) {
+					clearStoredToken()
+					setApiError('Votre session a expiré. Veuillez vous reconnecter.')
+				} else {
+					setApiError(getApiErrorMessage(error))
+				}
+			} finally {
+				if (active) setIsLoading(false)
+			}
+		}
+
+		void restoreSession()
+		return () => { active = false }
 	}, [])
+
+	const handleAuthenticated = async (authenticatedToken: string, authenticatedUser: Utilisateur) => {
+		storeToken(authenticatedToken)
+		setToken(authenticatedToken)
+		setUser(authenticatedUser)
+		setApiError('')
+
+		try {
+			setProjects(await getProjects(authenticatedToken))
+		} catch (error) {
+			if (error instanceof ApiError && error.status === 401) {
+				clearStoredToken()
+				setToken(null)
+				setUser(null)
+				setApiError('Votre session a expiré. Veuillez vous reconnecter.')
+				return
+			}
+			setApiError(getApiErrorMessage(error))
+		}
+	}
+
+	const handleCreateProject = async (title: string): Promise<boolean> => {
+		if (!token) return false
+		try {
+			const project = await createProject(token, title)
+			setProjects((currentProjects) => [project, ...currentProjects])
+			setApiError('')
+			return true
+		} catch (error) {
+			setApiError(getApiErrorMessage(error))
+			return false
+		}
+	}
+
+	const handleLogout = () => {
+		clearStoredToken()
+		setToken(null)
+		setUser(null)
+		setProjects([])
+		setApiError('')
+		setActiveNav('Mes projets')
+	}
 
 	const progress = Math.round((3030 / goal) * 100)
 	const alerts = showAllAlerts
@@ -210,6 +320,10 @@ function App() {
 			description: 'Votre dernière version est bien sauvegardée.',
 			type: 'success',
 		})
+	}
+
+	if (!isLoading && !user) {
+		return <AuthScreen onAuthenticated={handleAuthenticated} initialError={apiError} />
 	}
 
 	if (isLoading) {
@@ -289,6 +403,10 @@ function App() {
 		)
 	}
 
+	if (!user) {
+		return <AuthScreen onAuthenticated={handleAuthenticated} initialError={apiError} />
+	}
+
 	return (
 		<div className="app-shell">
 			<aside className="sidebar">
@@ -299,7 +417,7 @@ function App() {
 
 				<button className="project-switcher" type="button" onClick={() => setActiveNav('Mes projets')}>
 					<span className="project-cover">M<span>&</span></span>
-					<span className="project-switcher-copy"><strong>Les marées de verre</strong><small>Mon roman</small></span>
+					<span className="project-switcher-copy"><strong>{projects[0]?.titre ?? 'Aucun projet'}</strong><small>Mon roman</small></span>
 					<ChevronDown size={15} />
 				</button>
 
@@ -307,7 +425,9 @@ function App() {
 					{navigation.map((group) => (
 						<div className="nav-group" key={group.heading}>
 							<p className="nav-heading">{group.heading}</p>
-							{group.items.map(({ label, icon: Icon, count }) => (
+							{group.items.map(({ label, icon: Icon, count: itemCount }) => {
+								const count = label === 'Mes projets' ? String(projects.length) : itemCount
+								return (
 								<button
 									className={`nav-link ${activeNav === label ? 'active' : ''}`}
 									key={label}
@@ -318,7 +438,8 @@ function App() {
 									<span>{label}</span>
 									{count && <span className="nav-count">{count}</span>}
 								</button>
-							))}
+								)
+							})}
 						</div>
 					))}
 				</nav>
@@ -333,9 +454,12 @@ function App() {
 						<Settings2 size={17} strokeWidth={1.8} /><span>Paramètres</span>
 					</button>
 					<button className="profile-button" type="button" onClick={() => setActiveNav('Mon profil')}>
-						<span className="avatar">NF</span>
-						<span className="profile-copy"><strong>Nathan F.</strong><small>Offre gratuite</small></span>
+						<span className="avatar">{user?.nomAffichage.slice(0, 2).toUpperCase()}</span>
+						<span className="profile-copy"><strong>{user?.nomAffichage}</strong><small>Offre gratuite</small></span>
 						<MoreHorizontal size={18} />
+					</button>
+					<button className="nav-link utility-link" type="button" onClick={handleLogout}>
+						<LogOut size={17} strokeWidth={1.8} /><span>Se déconnecter</span>
 					</button>
 				</div>
 			</aside>
@@ -369,12 +493,13 @@ function App() {
 				</header>
 
 				<div className="dashboard-content">
+					{apiError && <div className="api-error-banner" role="alert">{apiError}</div>}
 					{activeNav === 'Vue d’ensemble' ? (
 						<>
 							<section className="welcome-row">
 								<div>
 									<p className="eyebrow"><span className="eyebrow-dot" /> VOTRE ATELIER D’ÉCRITURE</p>
-									<h1>Bonjour Nathan <span className="wave">✳</span></h1>
+									<h1>Bonjour {user?.nomAffichage.split(' ')[0]} <span className="wave">✳</span></h1>
 									<p className="welcome-subtitle">Une nouvelle page vous attend. Où en êtes-vous aujourd’hui ?</p>
 								</div>
 								<Button className="primary-button" type="button" onClick={() => setShowQuickStart(true)}>
@@ -472,7 +597,13 @@ function App() {
 							<footer className="dashboard-footer"><span>Votre espace d’écriture, à votre rythme.</span><span><span className="sync-dot" /> Tout est enregistré <span className="footer-separator">·</span> <button type="button" onClick={() => setActiveNav('Aide')}>Besoin d’aide ?</button></span></footer>
 						</>
 					) : (
-						<WorkspacePage page={activeNav} onNavigate={setActiveNav} />
+						<WorkspacePage
+							page={activeNav}
+							onNavigate={setActiveNav}
+							projects={projects}
+							user={user}
+							onCreateProject={handleCreateProject}
+						/>
 					)}
 				</div>
 			</main>
