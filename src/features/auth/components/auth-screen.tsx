@@ -45,80 +45,97 @@ function AuthScreen({ initialError = '' }: AuthScreenProps) {
 
 	return (
 		<main className="auth-screen">
-			<section className="auth-card" aria-labelledby="auth-title">
+			<section className="auth-panel" aria-labelledby="auth-title">
 				<a className="auth-brand" href="#accueil" aria-label="Parchy, accueil">
 					<span className="auth-brand-mark"><BookOpen size={20} /></span>
 					<span>parchy<span>.</span></span>
 				</a>
-				<p className="auth-eyebrow">VOTRE ATELIER D’ÉCRITURE</p>
-				<h1 id="auth-title">{isRegistering ? 'Créez votre compte' : 'Heureux de vous revoir'}</h1>
-				<p className="auth-description">
-					{isRegistering
-						? 'Inscrivez-vous pour retrouver votre espace auteur.'
-						: 'Connectez-vous pour retrouver vos projets et votre espace auteur.'}
-				</p>
+				<div className="auth-form-wrap">
+					<p className="auth-eyebrow">VOTRE ATELIER D’ÉCRITURE</p>
+					<h1 id="auth-title">{isRegistering ? 'Créez votre compte' : 'Heureux de vous revoir'}</h1>
+					<p className="auth-description">
+						{isRegistering
+							? 'Inscrivez-vous pour retrouver votre espace auteur.'
+							: 'Connectez-vous pour retrouver vos projets et votre espace auteur.'}
+					</p>
 
-				<form className="auth-form" onSubmit={handleSubmit}>
-					{isRegistering && (
+					<form className="auth-form" onSubmit={handleSubmit}>
+						{isRegistering && (
+							<label>
+								Nom affiché
+								<Input
+									autoComplete="name"
+									required
+									maxLength={100}
+									value={name}
+									onChange={(event) => setName(event.target.value)}
+									placeholder="Votre nom"
+									aria-invalid={Boolean(fieldErrors.nomAffichage)}
+								/>
+								{fieldErrors.nomAffichage && <span className="auth-field-error">{fieldErrors.nomAffichage}</span>}
+							</label>
+						)}
 						<label>
-							Nom affiché
+							Adresse e-mail
 							<Input
-								autoComplete="name"
+								type="email"
+								autoComplete="email"
 								required
-								maxLength={100}
-								value={name}
-								onChange={(event) => setName(event.target.value)}
-								placeholder="Votre nom"
-								aria-invalid={Boolean(fieldErrors.nomAffichage)}
+								maxLength={180}
+								value={email}
+								onChange={(event) => setEmail(event.target.value)}
+								placeholder="vous@exemple.fr"
+								aria-invalid={Boolean(fieldErrors.email)}
 							/>
-							{fieldErrors.nomAffichage && <span className="auth-field-error">{fieldErrors.nomAffichage}</span>}
+							{fieldErrors.email && <span className="auth-field-error">{fieldErrors.email}</span>}
 						</label>
-					)}
-					<label>
-						Adresse e-mail
-						<Input
-							type="email"
-							autoComplete="email"
-							required
-							maxLength={180}
-							value={email}
-							onChange={(event) => setEmail(event.target.value)}
-							placeholder="vous@exemple.fr"
-							aria-invalid={Boolean(fieldErrors.email)}
-						/>
-						{fieldErrors.email && <span className="auth-field-error">{fieldErrors.email}</span>}
-					</label>
-					<label>
-						Mot de passe
-						<Input
-							type="password"
-							autoComplete={isRegistering ? 'new-password' : 'current-password'}
-							required
-							minLength={isRegistering ? 8 : undefined}
-							maxLength={4096}
-							value={password}
-							onChange={(event) => setPassword(event.target.value)}
-							placeholder={isRegistering ? '8 caractères minimum' : 'Votre mot de passe'}
-							aria-invalid={Boolean(fieldErrors.motDePasse)}
-						/>
-						{fieldErrors.motDePasse && <span className="auth-field-error">{fieldErrors.motDePasse}</span>}
-					</label>
-					{globalError && <p className="auth-error" role="alert">{globalError}</p>}
-					<button className="auth-submit" type="submit" disabled={mutation.isPending}>
-						{mutation.isPending && <LoaderCircle size={16} className="auth-spinner" />}
-						{mutation.isPending
-							? isRegistering ? 'Création du compte…' : 'Connexion en cours…'
-							: isRegistering ? 'Créer mon compte' : 'Se connecter'}
-					</button>
-				</form>
+						<label>
+							Mot de passe
+							<Input
+								type="password"
+								autoComplete={isRegistering ? 'new-password' : 'current-password'}
+								required
+								minLength={isRegistering ? 8 : undefined}
+								maxLength={4096}
+								value={password}
+								onChange={(event) => setPassword(event.target.value)}
+								placeholder={isRegistering ? '8 caractères minimum' : 'Votre mot de passe'}
+								aria-invalid={Boolean(fieldErrors.motDePasse)}
+							/>
+							{fieldErrors.motDePasse && <span className="auth-field-error">{fieldErrors.motDePasse}</span>}
+						</label>
+						{globalError && <p className="auth-error" role="alert">{globalError}</p>}
+						<button className="auth-submit" type="submit" disabled={mutation.isPending}>
+							{mutation.isPending && <LoaderCircle size={16} className="auth-spinner" />}
+							{mutation.isPending
+								? isRegistering ? 'Création du compte…' : 'Connexion en cours…'
+								: isRegistering ? 'Créer mon compte' : 'Se connecter'}
+						</button>
+					</form>
 
-				<p className="auth-switch">
-					{isRegistering ? 'Vous avez déjà un compte ?' : 'Pas encore de compte ?'}{' '}
-					<button type="button" onClick={switchMode}>
-						{isRegistering ? 'Se connecter' : 'Créer un compte'}
-					</button>
-				</p>
+					<p className="auth-switch">
+						{isRegistering ? 'Vous avez déjà un compte ?' : 'Pas encore de compte ?'}{' '}
+						<button type="button" onClick={switchMode}>
+							{isRegistering ? 'Se connecter' : 'Créer un compte'}
+						</button>
+					</p>
+				</div>
+				<footer className="auth-footer"><span>© Parchy</span><span>Un mot après l’autre.</span></footer>
 			</section>
+
+			<aside className="auth-story" aria-label="Aperçu de votre espace d’écriture">
+				<div className="story-topline"><span><i /> ESPACE AUTEUR</span><span>01 — 03</span></div>
+				<div className="story-content">
+					<p className="story-kicker">LES MARÉES DE VERRE <span>·</span> CHAPITRE 03</p>
+					<p className="story-excerpt">La brume avait recouvert le port avant même le lever du soleil.</p>
+					<p className="story-excerpt-secondary">Élise connaissait ce silence : celui qui précédait les grandes marées.</p>
+					<div className="story-divider" />
+					<div className="story-meta"><span>MANUSCRIT EN COURS</span><strong>12 480 <small>mots</small></strong></div>
+					<div className="story-progress"><span /></div>
+					<div className="story-progress-caption"><span>Votre histoire reprend ici</span><span>30 %</span></div>
+				</div>
+				<div className="story-bottom"><span>Écrivez à votre rythme.</span><BookOpen size={17} /></div>
+			</aside>
 		</main>
 	)
 }
