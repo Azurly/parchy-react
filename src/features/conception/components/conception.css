@@ -1,0 +1,46 @@
+/* Conception guidée */
+.conception-intro { margin: 0 0 16px; color: #5f6862; font-size: 12px; line-height: 1.6; }
+.methode-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.methode-carte { display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #fff; border: 1px solid #e9ece8; border-radius: 6px; }
+.methode-carte.actuelle { border-color: #9db9a2; background: #f8fbf7; }
+.methode-carte h3 { margin: 0; color: #38413b; font-size: 14px; font-weight: 650; }
+.methode-carte p { margin: 0; color: #5f6862; font-size: 11px; line-height: 1.55; }
+.methode-carte small { color: #6c756f; font-size: 10px; }
+.methode-carte .primary-button { margin-top: auto; align-self: flex-start; }
+
+.conception-panel { padding: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); overflow: hidden; min-height: 480px; }
+.conception-etapes { padding: 19px 12px; border-right: 1px solid #edf0ec; background: #fbfcfa; }
+.conception-etapes .workspace-panel-heading { margin: 0 4px 10px; }
+.conception-etapes h2 { font-size: 13px; }
+.conception-progression { margin: 0 4px 14px; }
+.conception-etapes ol { margin: 0 0 14px; padding: 0; list-style: none; }
+.conception-etape { width: 100%; min-height: 36px; margin-bottom: 2px; padding: 6px 7px; display: flex; align-items: center; gap: 8px; color: #59645b; background: transparent; border: 0; border-radius: 4px; text-align: left; font-size: 11px; }
+.conception-etape:hover, .conception-etape.selected { color: #355b46; background: #edf3ec; }
+.conception-etape.selected { font-weight: 650; }
+.conception-numero { width: 20px; height: 20px; flex: 0 0 20px; display: grid; place-items: center; color: #6c756f; border: 1px solid #e1e6e0; border-radius: 50%; font-size: 9px; }
+.conception-etape.remplie .conception-numero { color: #fff; background: #7da184; border-color: #7da184; }
+
+.conception-contenu { min-width: 0; padding: 24px clamp(18px, 4vw, 44px); display: flex; flex-direction: column; gap: 12px; }
+.conception-entete { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.conception-titre { margin: 0; color: #2f3c33; font-size: 20px; font-weight: 650; letter-spacing: -.3px; }
+.conception-consigne { margin: 0; padding: 12px 14px; color: #4a514b; background: #f6f9f5; border-left: 3px solid #9db9a2; border-radius: 0 5px 5px 0; font-size: 13px; line-height: 1.6; }
+.conception-texte { width: 100%; min-height: 260px; flex: 1; resize: vertical; padding: 16px 18px; color: #4a514b; background: #fff; border: 1px solid #e4e9e3; border-radius: 6px; font-family: Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.8; }
+.conception-texte:focus { outline: 2px solid #d5e4d7; border-color: #9db9a2; }
+.conception-navigation { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.conception-navigation .primary-button { margin-left: auto; }
+.conception-navigation .secondary-button:disabled { opacity: .45; cursor: default; }
+.conception-effacer { color: #9c3d38; }
+
+.conception-fiches { display: grid; gap: 12px; }
+.conception-fiche { margin: 0; padding: 12px 14px; display: grid; gap: 8px; border: 1px solid #e4e9e3; border-radius: 6px; }
+.conception-fiche-entete { display: flex; align-items: center; gap: 8px; }
+.conception-fiche-nom { flex: 1; min-width: 0; padding: 6px 8px; color: #38413b; border: 1px solid #e4e9e3; border-radius: 4px; font: inherit; font-size: 13px; font-weight: 650; }
+.conception-fiche label { display: grid; gap: 4px; color: #5f6862; font-size: 11px; font-weight: 600; }
+.conception-fiche textarea { width: 100%; resize: vertical; padding: 6px 8px; color: #4a514b; border: 1px solid #e4e9e3; border-radius: 4px; font: inherit; font-size: 12px; font-weight: 400; }
+.conception-fiche input:focus, .conception-fiche textarea:focus { outline: 2px solid #d5e4d7; border-color: #9db9a2; }
+
+@media (max-width: 760px) {
+	.conception-panel { grid-template-columns: 1fr; }
+	.conception-etapes { border-right: 0; border-bottom: 1px solid #edf0ec; }
+}
+.conception-fiche-lien { display: inline-flex; align-items: center; gap: 4px; color: #55735d; font-size: 10px; font-weight: 600; white-space: nowrap; }

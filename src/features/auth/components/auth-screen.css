@@ -37,6 +37,7 @@
 .auth-form label { display: grid; gap: 7px; color: #58645a; font-size: 11px; font-weight: 600; }
 .auth-form input { height: 42px; border-radius: 6px; font-size: 13px; }
 .auth-error { margin: 0; padding: 10px 12px; color: #9c3d38; background: #fff3f1; border: 1px solid #f1d4d0; border-radius: 5px; font-size: 12px; line-height: 1.5; }
+.auth-field-error { color: #9c3d38; font-size: 11px; font-weight: 500; line-height: 1.4; }
 .auth-submit { min-height: 43px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 3px; color: #fff; background: #4d765f; border: 0; border-radius: 6px; font: inherit; font-size: 12px; font-weight: 600; }
 .auth-submit:hover:not(:disabled) { background: #3f6651; }
 .auth-submit:disabled { cursor: wait; opacity: .7; }

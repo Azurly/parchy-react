@@ -1,45 +1,46 @@
 import { useState, type FormEvent } from 'react'
 import { BookOpen, LoaderCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import {
-	getApiErrorMessage,
-	getCurrentUser,
-	login,
-	register,
-	type Utilisateur,
-} from '@/lib/api'
+import { ApiError, getErrorMessage } from '@/shared/api/errors'
+import { useLogin, useRegister } from '../hooks'
 import './auth-screen.css'
 
 interface AuthScreenProps {
-	onAuthenticated: (token: string, user: Utilisateur) => Promise<void>
+	/** Message affiché à l'arrivée, par exemple « session expirée ». */
 	initialError?: string
 }
 
-function AuthScreen({ onAuthenticated, initialError = '' }: AuthScreenProps) {
+function AuthScreen({ initialError = '' }: AuthScreenProps) {
 	const [isRegistering, setIsRegistering] = useState(false)
 	const [name, setName] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
-	const [error, setError] = useState('')
-	const [isSubmitting, setIsSubmitting] = useState(false)
+	const login = useLogin()
+	const register = useRegister()
 
-	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+	const mutation = isRegistering ? register : login
+	const error = mutation.error
+	const fieldErrors = error instanceof ApiError ? error.fieldErrors : {}
+	const hasFieldErrors = Object.keys(fieldErrors).some((field) => field !== '_global')
+	const globalError = error
+		? fieldErrors._global ?? (hasFieldErrors ? '' : getErrorMessage(error))
+		: initialError
+
+	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		setError('')
-		setIsSubmitting(true)
+		if (mutation.isPending) return
 
-		try {
-			if (isRegistering) {
-				await register(email.trim(), password, name.trim())
-			}
-			const token = await login(email.trim(), password)
-			const user = await getCurrentUser(token)
-			await onAuthenticated(token, user)
-		} catch (submitError) {
-			setError(getApiErrorMessage(submitError))
-		} finally {
-			setIsSubmitting(false)
+		if (isRegistering) {
+			register.mutate({ email: email.trim(), motDePasse: password, nomAffichage: name.trim() })
+		} else {
+			login.mutate({ email: email.trim(), motDePasse: password })
 		}
+	}
+
+	function switchMode() {
+		setIsRegistering(!isRegistering)
+		login.reset()
+		register.reset()
 	}
 
 	return (
@@ -68,7 +69,9 @@ function AuthScreen({ onAuthenticated, initialError = '' }: AuthScreenProps) {
 								value={name}
 								onChange={(event) => setName(event.target.value)}
 								placeholder="Votre nom"
+								aria-invalid={Boolean(fieldErrors.nomAffichage)}
 							/>
+							{fieldErrors.nomAffichage && <span className="auth-field-error">{fieldErrors.nomAffichage}</span>}
 						</label>
 					)}
 					<label>
@@ -81,7 +84,9 @@ function AuthScreen({ onAuthenticated, initialError = '' }: AuthScreenProps) {
 							value={email}
 							onChange={(event) => setEmail(event.target.value)}
 							placeholder="vous@exemple.fr"
+							aria-invalid={Boolean(fieldErrors.email)}
 						/>
+						{fieldErrors.email && <span className="auth-field-error">{fieldErrors.email}</span>}
 					</label>
 					<label>
 						Mot de passe
@@ -90,27 +95,26 @@ function AuthScreen({ onAuthenticated, initialError = '' }: AuthScreenProps) {
 							autoComplete={isRegistering ? 'new-password' : 'current-password'}
 							required
 							minLength={isRegistering ? 8 : undefined}
+							maxLength={4096}
 							value={password}
 							onChange={(event) => setPassword(event.target.value)}
 							placeholder={isRegistering ? '8 caractères minimum' : 'Votre mot de passe'}
+							aria-invalid={Boolean(fieldErrors.motDePasse)}
 						/>
+						{fieldErrors.motDePasse && <span className="auth-field-error">{fieldErrors.motDePasse}</span>}
 					</label>
-					{(error || initialError) && <p className="auth-error" role="alert">{error || initialError}</p>}
-					<button className="auth-submit" type="submit" disabled={isSubmitting}>
-						{isSubmitting && <LoaderCircle size={16} className="auth-spinner" />}
-						{isSubmitting ? 'Connexion en cours…' : isRegistering ? 'Créer mon compte' : 'Se connecter'}
+					{globalError && <p className="auth-error" role="alert">{globalError}</p>}
+					<button className="auth-submit" type="submit" disabled={mutation.isPending}>
+						{mutation.isPending && <LoaderCircle size={16} className="auth-spinner" />}
+						{mutation.isPending
+							? isRegistering ? 'Création du compte…' : 'Connexion en cours…'
+							: isRegistering ? 'Créer mon compte' : 'Se connecter'}
 					</button>
 				</form>
 
 				<p className="auth-switch">
 					{isRegistering ? 'Vous avez déjà un compte ?' : 'Pas encore de compte ?'}{' '}
-					<button
-						type="button"
-						onClick={() => {
-							setIsRegistering(!isRegistering)
-							setError('')
-						}}
-					>
+					<button type="button" onClick={switchMode}>
 						{isRegistering ? 'Se connecter' : 'Créer un compte'}
 					</button>
 				</p>

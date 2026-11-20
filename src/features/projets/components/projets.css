@@ -1,0 +1,11 @@
+/* Ligne de projet : zone cliquable + menu d'actions (deux boutons distincts). */
+.project-list-row { padding: 0; gap: 4px; }
+.project-list-row.is-active .project-list-copy strong { color: #355b46; }
+.project-list-row.is-active .project-list-cover { outline: 2px solid #b9d0bf; outline-offset: 2px; }
+.project-list-open { flex: 1; min-width: 0; min-height: 82px; padding: 12px 4px; display: flex; align-items: center; gap: 13px; background: transparent; border: 0; text-align: left; }
+.project-list-open > svg { color: #a7aea8; flex: 0 0 auto; }
+.project-list-copy { min-width: 0; }
+.project-list-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.projet-load-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0; padding: 11px 13px; color: #913f38; background: #fff3f1; border: 1px solid #efd6d2; border-radius: 5px; font-size: 11px; }
+

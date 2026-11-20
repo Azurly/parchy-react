@@ -168,7 +168,7 @@ h1 { margin-bottom: 6px; color: #25322c; font-family: 'Inter Variable', sans-ser
 .streak-strip small { color: #929a93; font-size: 8px; }
 .streak-dots { display: flex; gap: 4px; margin-left: auto; }
 .streak-dots i { width: 7px; height: 7px; border-radius: 50%; background: #e8ece6; }
-.streak-dots i:nth-child(-n+4) { background: #87a487; }
+.streak-dots i.done-streak { background: #87a487; }
 .streak-dots i.today-streak { outline: 2px solid #dbe8da; outline-offset: 2px; }
 .alerts-panel { padding: 16px 16px 12px; animation: enter .48s .2s ease both; }
 .alerts-heading { align-items: flex-start; }
