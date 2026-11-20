@@ -33,6 +33,7 @@ import { useCurrentUser, useLogout, useSessionEndMessage, useSessionToken } from
 import { libelleFormule } from '@/features/auth/formule'
 import type { Utilisateur } from '@/features/auth/api'
 import { getErrorMessage } from '@/shared/api/errors'
+import { useNavigation } from '@/shared/navigation'
 import ProjetsPage from '@/features/projets/components/projets-page'
 import ProjectSwitcher from '@/features/projets/components/project-switcher'
 import { useProjetActif, useProjets } from '@/features/projets/hooks'
@@ -148,8 +149,10 @@ function WorkspacePage({
 	)
 }
 
+const pagesApp = ['Vue d’ensemble', 'Mes projets', 'Manuscrit', 'Suivi', 'Exports', 'Conception guidée', 'Mon univers', 'Personnages', 'Plan du roman', 'Mon profil', 'Recherche', 'Aide'] as const
+
 function App() {
-	const [activeNav, setActiveNav] = useState('Mes projets')
+	const [activeNav, setActiveNav] = useNavigation(pagesApp, 'Mes projets')
 	const [noticeDismissed, setNoticeDismissed] = useState(false)
 	const [showQuickStart, setShowQuickStart] = useState(false)
 	const [searchValue, setSearchValue] = useState('')
