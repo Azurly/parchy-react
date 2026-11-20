@@ -168,7 +168,7 @@ h1 { margin-bottom: 6px; color: #25322c; font-family: 'Inter Variable', sans-ser
 .streak-strip small { color: #929a93; font-size: 8px; }
 .streak-dots { display: flex; gap: 4px; margin-left: auto; }
 .streak-dots i { width: 7px; height: 7px; border-radius: 50%; background: #e8ece6; }
-.streak-dots i:nth-child(-n+4) { background: #87a487; }
+.streak-dots i.done-streak { background: #87a487; }
 .streak-dots i.today-streak { outline: 2px solid #dbe8da; outline-offset: 2px; }
 .alerts-panel { padding: 16px 16px 12px; animation: enter .48s .2s ease both; }
 .alerts-heading { align-items: flex-start; }
@@ -325,6 +325,7 @@ h1 { margin-bottom: 6px; color: #25322c; font-family: 'Inter Variable', sans-ser
 .new-project-form input:focus, .profile-field input:focus, .large-search input:focus, .inline-search input:focus { outline: 2px solid #d5e4d7; border-color: #9db9a2; }
 .workspace-message { min-height: 37px; margin: -9px 0 16px; padding: 0 10px; display: flex; align-items: center; gap: 7px; color: #54745a; background: #eff5ed; border: 1px solid #e2ecdf; border-radius: 4px; font-size: 10px; }
 .workspace-message > button { width: 24px; height: 24px; margin-left: auto; display: grid; place-items: center; color: #788e7a; background: transparent; border: 0; }
+.api-error-banner { margin-bottom: 16px; padding: 11px 13px; color: #913f38; background: #fff3f1; border: 1px solid #efd6d2; border-radius: 5px; font-size: 11px; line-height: 1.5; }
 .writing-workspace { min-height: 475px; padding: 0; display: grid; grid-template-columns: 220px minmax(0, 1fr); overflow: hidden; }
 .writing-outline { padding: 19px 12px; border-right: 1px solid #edf0ec; background: #fbfcfa; }
 .writing-outline .workspace-panel-heading { margin: 0 4px 14px; }

@@ -1,0 +1,25 @@
+/* Plan du roman */
+.plan-chapitre { margin-top: 18px; }
+.plan-chapitre-entete { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+.plan-chapitre-titre { min-width: 0; flex: 1; padding: 4px 6px; color: #38413b; background: transparent; border: 1px solid transparent; border-radius: 4px; font: inherit; font-size: 13px; font-weight: 650; }
+.plan-chapitre-titre:hover { border-color: #e4e9e3; }
+.plan-chapitre-titre:focus { outline: 2px solid #d5e4d7; border-color: #9db9a2; background: #fff; }
+.plan-chapitre-entete > small { color: #6c756f; font-size: 10px; white-space: nowrap; }
+.plan-actions { display: inline-flex; gap: 2px; }
+.plan-actions .icon-button { width: 27px; height: 27px; }
+.plan-actions .icon-button:disabled { opacity: .35; cursor: default; }
+.plan-scene { padding: 0 0 0 4px; gap: 4px; }
+.plan-scene-ouvrir { min-width: 0; flex: 1; min-height: 40px; display: flex; align-items: center; gap: 10px; color: #525a54; background: transparent; border: 0; text-align: left; font-size: 11px; }
+.plan-scene-ouvrir > svg { color: #a8afa9; flex: 0 0 auto; }
+.plan-scene-titre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plan-scene-ouvrir small { margin-left: auto; color: #6c756f; font-size: 10px; white-space: nowrap; }
+.plan-statut { padding: 2px 7px; border-radius: 10px; font-size: 9px; font-weight: 600; white-space: nowrap; }
+.statut-plan { color: #6c756f; background: #f0f3ef; }
+.statut-brouillon { color: #8a6438; background: #faf3e9; }
+.statut-relu { color: #56708f; background: #edf0f7; }
+.statut-final { color: #44664f; background: #eaf1e9; }
+.plan-ajout-chapitre { margin-top: 20px; }
+
+@media (max-width: 560px) {
+	.plan-statut, .plan-scene-ouvrir small { display: none; }
+}

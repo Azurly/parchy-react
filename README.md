@@ -124,10 +124,18 @@ Variables principales, à renseigner dans `backend/.env.local` et `frontend/.env
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Paiement |
 | `STORAGE_S3_*` | Stockage des exports et des images |
 | `GOTENBERG_URL` | Génération des PDF |
-| `VITE_API_URL` | URL de base de l'API (par défaut : `http://localhost:8000/api`) |
-| `VITE_AUTH_ENDPOINT` | URL complète de connexion (par défaut : `${VITE_API_URL}/login`) |
+| `VITE_API_URL` | URL de l'API Symfony (par défaut : `http://localhost:8000/api`) |
 
-L'écran d'entrée envoie `POST` avec `{ "email", "password" }` à l'endpoint de connexion. La réponse doit fournir un JWT dans l'un des champs `token`, `access_token` ou `jwt`. Le jeton est conservé dans le navigateur, contrôlé à l'ouverture et envoyé en Bearer aux appels protégés ; un `401` ferme la session et ramène à la connexion.
+## Image Docker
+
+Depuis le dossier `parchy-react` :
+
+```bash
+docker build --build-arg VITE_API_URL=http://localhost:8000/api -t parchy-react .
+docker run --rm -p 3000:80 parchy-react
+```
+
+L'application est ensuite disponible sur http://localhost:3000. `VITE_API_URL` est intégrée au bundle lors de la construction de l'image ; en production, indiquez l'URL publique de l'API. L'authentification utilise `POST /connexion`, conformément au [contrat API](docs/API-CONTRAT.md).
 
 ## Commandes utiles
 

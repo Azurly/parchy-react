@@ -1,10 +1,22 @@
-# Use an official Nginx image
+FROM node:22-alpine AS build
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+ARG VITE_API_URL=http://localhost:8000/api
+ENV VITE_API_URL=${VITE_API_URL}
+
+RUN npm run build
+
 FROM nginx:alpine
-# Copy build files to Nginx public folder
-COPY ./dist /usr/share/nginx/html
-# Optional: Add custom Nginx configuration for React Router support
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-# Expose port 80
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
 EXPOSE 80
-# Start Nginx
+
 CMD ["nginx", "-g", "daemon off;"]
