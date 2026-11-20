@@ -1,0 +1,52 @@
+.univers-filtres { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.univers-filtres button { min-height: 28px; padding: 0 10px; color: #5f6862; background: #fff; border: 1px solid #e4e9e3; border-radius: 14px; font-size: 10px; font-weight: 600; }
+.univers-filtres button:hover { background: #f6f8f5; }
+.univers-filtres button.actif { color: #fff; background: #4d765f; border-color: #4d765f; }
+.univers-ligne { width: 100%; min-height: 61px; padding: 8px 2px; display: flex; align-items: center; gap: 11px; border-top: 1px solid #edf0ec; }
+.univers-ligne > span:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.univers-ligne strong { color: #505950; font-size: 11px; font-weight: 600; }
+.univers-ligne small { color: #6c756f; font-size: 10px; line-height: 1.4; }
+.univers-date { margin-left: auto; white-space: nowrap; }
+.personnage-details { color: #6c756f; font-size: 10px; font-style: italic; }
+
+/* Fiches, relations, chronologie */
+.universe-entry-list > button .univers-date { margin-left: auto; color: #6c756f; font-size: 10px; white-space: nowrap; }
+.universe-entry-list > button .univers-date + svg { margin-left: 8px; }
+.personnages-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.personnage-carte { width: 100%; text-align: left; font: inherit; cursor: pointer; }
+.personnage-carte:hover { border-color: #c9d8cc; }
+
+.fiche-dialog { max-width: min(620px, calc(100% - 2rem)); max-height: calc(100vh - 2rem); overflow-y: auto; }
+.fiche-champs { margin: 0; padding: 0; border: 0; display: grid; gap: 6px; }
+.fiche-champs legend { margin-bottom: 6px; color: #4b544d; font-size: 12px; font-weight: 600; }
+.fiche-champ { display: grid; grid-template-columns: 150px minmax(0, 1fr) 28px; gap: 6px; align-items: center; }
+.projet-form .fiche-champ-cle[readonly] { color: #5f6862; background: #f6f8f5; font-weight: 600; }
+.fiche-supprimer { margin-right: auto; color: #9c3d38; }
+.fiche-confirmation { display: grid; gap: 10px; padding: 12px; background: #fff7f5; border: 1px solid #f1d4d0; border-radius: 6px; color: #4b544d; font-size: 12px; }
+.fiche-confirmation p { margin: 0; }
+
+.fiche-relations { display: grid; gap: 8px; padding-top: 14px; border-top: 1px solid #edf0ec; }
+.fiche-relations h3 { margin: 0; color: #38413b; font-size: 13px; font-weight: 650; }
+.fiche-relations ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.fiche-relations li { display: flex; align-items: center; gap: 8px; color: #4a514b; font-size: 12px; }
+.fiche-relations li > svg { color: #7da184; flex: 0 0 auto; }
+.fiche-relations li > span { flex: 1; }
+.fiche-relation-ajout { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: #5f6862; font-size: 12px; }
+.fiche-relation-ajout input, .fiche-relation-ajout select { height: 32px; min-width: 0; padding: 0 8px; color: #3f4842; background: #fff; border: 1px solid #e1e6e0; border-radius: 4px; font: inherit; font-size: 12px; }
+.fiche-relation-ajout input { width: 130px; }
+.fiche-relation-ajout select { flex: 1; min-width: 160px; }
+.fiche-relation-ajout .primary-button { min-height: 32px; }
+
+.chronologie-actions { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+.chronologie { margin: 0; padding: 0; list-style: none; }
+.chronologie-lies { color: #55735d !important; }
+.chronologie-fiches { margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.chronologie-fiches legend { margin-bottom: 6px; color: #4b544d; font-size: 12px; font-weight: 600; }
+.chronologie-fiches label { display: flex !important; align-items: center; gap: 5px; font-weight: 400 !important; }
+.chronologie-fiches input { width: auto !important; }
+
+@media (max-width: 560px) {
+	.fiche-champ { grid-template-columns: 1fr 28px; }
+	.fiche-champ-cle { grid-column: 1 / -1; }
+}
+.personnage-carte { background: #fff; }

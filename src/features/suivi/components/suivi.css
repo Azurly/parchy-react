@@ -1,0 +1,38 @@
+/* Suivi : tuiles, graphique, objectif, historique */
+.suivi-tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.suivi-tuile { display: flex; flex-direction: column; gap: 4px; }
+.suivi-tuile > strong { margin-top: 8px; color: #26332f; font-family: 'Inter Variable', sans-serif; font-size: 24px; font-weight: 640; letter-spacing: -.6px; font-variant-numeric: tabular-nums; }
+.suivi-tuile > span:not(.section-icon) { color: #4a514b; font-size: 11px; }
+.suivi-tuile > small { color: #5f6862; font-size: 10px; }
+
+.graphique-jours { margin: 0; }
+.graphique-titre { margin-bottom: 10px; color: #38413b; font-size: 13px; font-weight: 650; }
+.graphique-zone { position: relative; }
+.graphique-zone svg { width: 100%; height: auto; display: block; overflow: visible; }
+.graphique-barre { fill: #3f7a57; transition: opacity .12s; }
+.graphique-barre.attenuee { opacity: .45; }
+.graphique-barre.active { fill: #2f6446; }
+.graphique-base { stroke: #c9d1ca; stroke-width: 1; }
+.graphique-grille { stroke: #edf0ec; stroke-width: 1; stroke-dasharray: 3 3; }
+.graphique-axe { fill: #5f6862; font-size: 10px; font-family: 'Inter Variable', sans-serif; }
+.graphique-cible { fill: transparent; cursor: default; outline: none; }
+.graphique-cible:focus-visible { stroke: #8eae9d; stroke-width: 2; }
+.graphique-infobulle { position: absolute; top: -6px; transform: translate(-50%, -100%); display: flex; flex-direction: column; gap: 2px; padding: 7px 9px; color: #4a514b; background: #fff; border: 1px solid #e1e6e0; border-radius: 5px; box-shadow: 0 6px 18px rgba(25, 40, 30, .11); font-size: 11px; white-space: nowrap; pointer-events: none; }
+.graphique-infobulle strong { color: #26332f; font-size: 12px; }
+.graphique-donnees { margin-top: 10px; font-size: 11px; color: #4a514b; }
+.graphique-donnees summary { color: #688271; cursor: pointer; font-weight: 600; }
+.graphique-donnees table, .suivi-sessions { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 11px; }
+.graphique-donnees th, .graphique-donnees td, .suivi-sessions th, .suivi-sessions td { padding: 6px 8px; border-bottom: 1px solid #f0f2ef; text-align: left; }
+.graphique-donnees td:not(:first-child), .suivi-sessions td:last-child { font-variant-numeric: tabular-nums; }
+.graphique-donnees th, .suivi-sessions th { color: #5f6862; font-weight: 600; }
+.suivi-sessions td.negatif { color: #9c3d38; }
+
+.suivi-projection { margin: 14px 0 0; display: flex; align-items: flex-start; gap: 7px; color: #4a514b; font-size: 12px; line-height: 1.6; }
+.suivi-projection > svg { margin-top: 3px; flex: 0 0 auto; color: #55735d; }
+.suivi-colonnes { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr); gap: 14px; margin-top: 14px; }
+.suivi-objectif { align-self: start; }
+.suivi-aide { margin: 8px 0 0; color: #5f6862; font-size: 11px; line-height: 1.5; }
+
+@media (max-width: 860px) {
+	.suivi-colonnes { grid-template-columns: 1fr; }
+}

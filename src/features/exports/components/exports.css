@@ -1,0 +1,32 @@
+/* Exports */
+.exports-colonnes { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(0, 1.6fr); gap: 14px; align-items: start; }
+.exports-formulaire fieldset { margin: 0; padding: 0; border: 0; display: grid; gap: 6px; }
+.exports-formulaire legend { margin-bottom: 6px; color: #4b544d; font-size: 12px; font-weight: 600; }
+.exports-formats label { display: flex !important; grid-template-columns: none; align-items: flex-start; gap: 9px; padding: 10px 11px; border: 1px solid #e4e9e3; border-radius: 6px; cursor: pointer; }
+.exports-formats label.actif { border-color: #9db9a2; background: #f8fbf7; }
+.exports-formats input { width: auto !important; margin-top: 2px; }
+.exports-formats span { display: flex; flex-direction: column; gap: 3px; }
+.exports-formats strong { color: #38413b; font-size: 12px; }
+.exports-formats small { color: #5f6862; font-size: 11px; font-weight: 400; }
+.exports-chapitres label { display: flex !important; align-items: center; gap: 6px; font-weight: 400 !important; }
+.exports-chapitres input { width: auto !important; }
+
+.exports-liste { margin: 0; padding: 0; list-style: none; }
+.exports-ligne { display: flex; align-items: center; gap: 12px; padding: 10px 2px; border-top: 1px solid #edf0ec; }
+.exports-format { width: 44px; flex: 0 0 44px; height: 54px; display: grid; place-items: center; color: #f3ecdb; background: #456a5b; border-radius: 3px; font-family: 'Inter Variable', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .5px; box-shadow: 2px 3px 6px rgba(35, 54, 42, .12); }
+.exports-infos { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.exports-infos strong { color: #38413b; font-size: 12px; font-weight: 600; }
+.exports-infos small { color: #5f6862; font-size: 11px; }
+.exports-erreur { color: #9c3d38 !important; }
+.exports-statut { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.exports-statut.attente { color: #8a6438; background: #faf3e9; }
+.exports-statut.pret { color: #44664f; background: #eaf1e9; }
+.exports-statut.echec { color: #9c3d38; background: #fff3f1; }
+.exports-telecharger { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; }
+
+@media (max-width: 900px) {
+	.exports-colonnes { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+	.exports-ligne { flex-wrap: wrap; }
+}

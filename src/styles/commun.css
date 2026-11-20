@@ -1,0 +1,41 @@
+/* Styles partagés par les features : fenêtres, formulaires, boutons secondaires. */
+.projet-dialog { max-width: min(520px, calc(100% - 2rem)); border-radius: 12px; }
+.projet-form { display: grid; gap: 14px; }
+.projet-form label { display: grid; gap: 6px; color: #4b544d; font-size: 12px; font-weight: 600; }
+.projet-form input, .projet-form select, .projet-form textarea { width: 100%; min-width: 0; padding: 8px 10px; color: #3f4842; background: #fff; border: 1px solid #e1e6e0; border-radius: 5px; font: inherit; font-size: 13px; font-weight: 400; }
+.projet-form textarea { resize: vertical; }
+.projet-form input:focus, .projet-form select:focus, .projet-form textarea:focus { outline: 2px solid #d5e4d7; border-color: #9db9a2; }
+.projet-form [aria-invalid='true'] { border-color: #d9a39d; }
+.projet-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.projet-field-hint { justify-self: end; color: #9aa29c; font-size: 10px; font-weight: 400; }
+.projet-field-error { color: #9c3d38; font-size: 11px; font-weight: 500; }
+.projet-form-error { margin: 0; padding: 10px 12px; color: #9c3d38; background: #fff3f1; border: 1px solid #f1d4d0; border-radius: 5px; font-size: 12px; }
+.projet-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.secondary-button { min-height: 37px; padding: 0 14px; color: #4b544d; background: #fff; border: 1px solid #e1e6e0; border-radius: 5px; font-size: 11px; font-weight: 600; }
+.secondary-button:hover { background: #f6f8f5; }
+.danger-button { background: #a34a42; border-color: #a34a42; }
+.danger-button:hover { background: #8c3d36; }
+.projet-spinner { animation: projet-spin .8s linear infinite; }
+@keyframes projet-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 560px) {
+	.projet-form-row { grid-template-columns: 1fr; }
+}
+
+/* Ajout rapide (chapitre, scène) */
+.ajout-rapide-bouton { width: 100%; min-height: 32px; margin-top: 4px; padding: 0 7px; display: flex; align-items: center; gap: 6px; color: #688271; background: transparent; border: 1px dashed #dbe3d9; border-radius: 4px; font-size: 10px; font-weight: 600; text-align: left; }
+.ajout-rapide-bouton:hover { color: #355b46; background: #f4f7f3; }
+.ajout-rapide { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 6px; }
+.ajout-rapide input { flex: 1; min-width: 0; height: 32px; padding: 0 9px; color: #3f4842; background: #fff; border: 1px solid #dfe5de; border-radius: 4px; font: inherit; font-size: 11px; }
+.ajout-rapide input:focus { outline: 2px solid #d5e4d7; border-color: #9db9a2; }
+.ajout-rapide .primary-button { min-height: 32px; padding: 0 10px; }
+.ajout-rapide-erreur { width: 100%; color: #9c3d38; font-size: 10px; }
+
+/* Profil */
+.profil-ligne { display: flex; gap: 8px; }
+.profil-ligne input { flex: 1; }
+.profil-aide { color: #6c756f; font-size: 10px; font-weight: 400; }
+
+/* Carte « Votre univers » de la barre latérale (bouton) */
+button.sidebar-mini-card { width: calc(100% - 2px); color: inherit; font: inherit; text-align: left; }
+button.sidebar-mini-card:hover { background: #f1f6f0; }
