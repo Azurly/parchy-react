@@ -20,6 +20,7 @@ import {
 	MapPin,
 	LayoutDashboard,
 	Lightbulb,
+	LogOut,
 	MoreHorizontal,
 	PenLine,
 	Plus,
@@ -39,6 +40,8 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Toaster, toast } from '@/components/ui/toast'
+import { AuthPage } from '@/components/AuthPage'
+import { clearStoredJwt, getStoredJwt } from '@/lib/auth'
 import './App.css'
 
 type NavItem = { label: string; icon: typeof LayoutDashboard; count?: string }
@@ -175,6 +178,7 @@ function WorkspacePage({ page, onNavigate }: { page: string; onNavigate: (page: 
 }
 
 function App() {
+	const [isAuthenticated, setIsAuthenticated] = useState(() => getStoredJwt() !== null)
 	const [activeNav, setActiveNav] = useState('Vue d’ensemble')
 	const [noticeDismissed, setNoticeDismissed] = useState(false)
 	const [goal, setGoal] = useState(5000)
@@ -210,6 +214,10 @@ function App() {
 			description: 'Votre dernière version est bien sauvegardée.',
 			type: 'success',
 		})
+	}
+
+	if (!isAuthenticated) {
+		return <AuthPage onAuthenticated={() => setIsAuthenticated(true)} />
 	}
 
 	if (isLoading) {
@@ -362,6 +370,9 @@ function App() {
 						</div>
 						<button className="icon-button notification-button" type="button" aria-label="Notifications" onClick={() => setNoticeDismissed(false)}>
 							<Bell size={17} /><i />
+						</button>
+						<button className="icon-button" type="button" aria-label="Se déconnecter" title="Se déconnecter" onClick={() => { clearStoredJwt(); setIsAuthenticated(false) }}>
+							<LogOut size={16} />
 						</button>
 						<span className="topbar-divider" />
 						<span className="today-label">Mardi 14 octobre 2025</span>

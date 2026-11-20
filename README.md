@@ -124,7 +124,10 @@ Variables principales, à renseigner dans `backend/.env.local` et `frontend/.env
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Paiement |
 | `STORAGE_S3_*` | Stockage des exports et des images |
 | `GOTENBERG_URL` | Génération des PDF |
-| `NEXT_PUBLIC_API_URL` | URL de l'API côté front |
+| `VITE_API_URL` | URL de base de l'API (par défaut : `http://localhost:8000/api`) |
+| `VITE_AUTH_ENDPOINT` | URL complète de connexion (par défaut : `${VITE_API_URL}/login`) |
+
+L'écran d'entrée envoie `POST` avec `{ "email", "password" }` à l'endpoint de connexion. La réponse doit fournir un JWT dans l'un des champs `token`, `access_token` ou `jwt`. Le jeton est conservé dans le navigateur, contrôlé à l'ouverture et envoyé en Bearer aux appels protégés ; un `401` ferme la session et ramène à la connexion.
 
 ## Commandes utiles
 
